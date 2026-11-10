@@ -34,7 +34,11 @@ export const KendaliExplainer: React.FC = () => {
   const [b0, b1, b2, b3] = getBeatFrames(fps);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.cream }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: COLORS.cream,
+      }}
+    >
       <HardCut from={b0} durationInFrames={b1 - b0} name="beat-1-separate-channels">
         <Beat1 width={width} height={height} />
       </HardCut>

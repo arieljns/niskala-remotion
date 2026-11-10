@@ -8,7 +8,14 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "@remotion/cli": "4.0.520",
+    "@remotion/fonts": "4.0.520",
     "@remotion/google-fonts": "^4.0.520",
+    "@remotion/layout-utils": "4.0.520",
+    "@remotion/media": "4.0.520",
+    "@remotion/motion-blur": "4.0.520",
+    "@remotion/paths": "4.0.520",
+    "@remotion/transitions": "4.0.520",
+    "mediabunny": "1.55.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.520"

@@ -11,6 +11,9 @@ export const COLORS = {
   cream: "#F7F3EA",
   ink: "#2B2620",
   accent: "#E8562A",
+  /** Success states only (order confirmed, "Pesanan tiba", ticks). Added for
+   *  the NiskalaStory series — never a decorative fill. */
+  green: "#2F8F5B",
 } as const;
 
 /**
@@ -75,3 +78,40 @@ export const ASPECT_RATIOS = {
 } as const;
 
 export type AspectRatioId = keyof typeof ASPECT_RATIOS;
+
+/**
+ * Converts a `COLORS` hex value to an `rgba(...)` string at the given alpha —
+ * used anywhere a token color needs partial opacity (ambient background
+ * squares, tinted chip borders, status pills) instead of a one-off hex value
+ * with baked-in alpha living outside this file.
+ */
+export function withAlpha(hex: string, alpha: number): string {
+  const clean = hex.replace("#", "");
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/**
+ * Shared `spring()` config for every entrance animation in the chunk-one
+ * series (src/ChunkOne.tsx and friends) — damping in the 12-15 range gives
+ * the "slight overshoot" feel the brief calls for. Distinct from the
+ * hard-cut package-explainer series above, which doesn't use springs.
+ */
+export const SPRING_CONFIG = {
+  damping: 13,
+  mass: 1,
+  stiffness: 180,
+} as const;
+
+/**
+ * Spring for small UI events in the NiskalaStory series only — chat bubbles,
+ * stars, badges, tap ripples. Devices and camera moves never spring; they use
+ * `EASE`. Kept separate from `SPRING_CONFIG` so chunk one's overshoot feel is
+ * untouched.
+ */
+export const STORY_SPRING = {
+  damping: 18,
+  mass: 0.8,
+} as const;

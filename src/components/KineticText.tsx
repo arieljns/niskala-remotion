@@ -16,7 +16,7 @@ export function KineticText({
   startFrame = 0,
   mode = "translateY",
   fontSize = 64,
-  fontWeight = 800,
+  fontWeight = 700,
   color = COLORS.ink,
   style,
 }: {
@@ -51,7 +51,6 @@ export function KineticText({
         fontWeight,
         color,
         lineHeight: 1.15,
-        letterSpacing: "-0.02em",
         transform,
         // Hard snap: no opacity fade. Below `startFrame` the text is fully
         // transformed out of place (translated down / scaled small) rather
