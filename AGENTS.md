@@ -17,6 +17,8 @@ Sebelum menulis script, kode, aset, atau merender **reel apa pun** (ide baru, re
 3. **Tanpa brief approved, jangan kerjakan apa pun untuk reel itu.** Kalau user minta langsung bikin/ubah reel, tolak dengan sopan dan mulai wawancara.
 4. Kalau ada yang salah setelah render/posting: masuk **mode debrief** (lihat SKILL.md), jangan langsung ubah kode.
 
+Reel **wajib di bawah 1 menit**.
+
 **Reel01 dikecualikan** (`src/reels/reel01/`): sudah ada sebelum gate, jadi boleh direvisi tanpa brief. Reel baru setelah itu tidak ada pengecualian.
 
 Pengecualian lain hanya untuk pekerjaan infrastruktur yang tidak menyangkut satu reel tertentu (membangun pipeline, token, komponen library, docs), dan itu tetap mengikuti fase di `docs/reels-workflow/STATUS.md`.

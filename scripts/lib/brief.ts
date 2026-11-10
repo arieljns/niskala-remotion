@@ -27,6 +27,8 @@ export type GateConfig = {
   stages: string[];
   /** Minimum rows in "Kalau ada yang salah" (grill stage 6 asks for three risks). */
   minRiskRows: number;
+  /** Reels must be shorter than this (owner rule: under one minute). */
+  maxDurationSecondsExclusive: number;
 };
 
 export type Meta = {
@@ -118,6 +120,16 @@ function tableRows(lines: string[]): string[][] {
 
 // ---------------------------------------------------------------- validation
 
+/** "45 detik", "45 dtk", "45s", "0:45", "1 menit" → seconds. Takes the largest number in a range ("30–45 detik" → 45). */
+export function parseDurationSeconds(value: string): number | null {
+  const clock = value.match(/(\d+):(\d{2})/);
+  if (clock) return Number(clock[1]) * 60 + Number(clock[2]);
+  const numbers = [...value.matchAll(/\d+(?:[.,]\d+)?/g)].map((m) => Number(m[0].replace(",", ".")));
+  if (!numbers.length) return null;
+  const n = Math.max(...numbers);
+  return /menit|min\b|mnt/i.test(value) ? n * 60 : n;
+}
+
 export type Problem = string;
 
 /** Field-level completeness check. Returns human-readable problems (empty = complete). */
@@ -137,6 +149,12 @@ export function findProblems(body: string, config: GateConfig): Problem[] {
       if (h3) sub = `${h3[1].trim()} › `;
       const field = line.match(/^-\s+([^:]+):(.*)$/);
       if (field && isBlank(field[2])) problems.push(`${section.title} › ${sub}${field[1].trim()}: belum diisi.`);
+      if (field && /^target durasi$/i.test(field[1].trim()) && !isBlank(field[2])) {
+        const seconds = parseDurationSeconds(field[2]);
+        const max = config.maxDurationSecondsExclusive;
+        if (seconds === null) problems.push(`${section.title} › Target durasi: tulis angka detik, mis. "45 detik".`);
+        else if (seconds >= max) problems.push(`${section.title} › Target durasi ${seconds} detik: reel harus di bawah ${max} detik.`);
+      }
     }
 
     const rows = tableRows(section.lines);

@@ -122,7 +122,7 @@ Bangun scripts berikut (Node/Python, jalan lokal):
 3. `scripts/render.ts`: baca satu folder reel atau banyak (`--all`, `--status ready`) lalu render ke `out/` dengan penamaan standar `YYYYMMDD_slug_template_tema.mp4`. Durasi komposisi dihitung dari `timeline.json` via `calculateMetadata`.
 4. `scripts/qa.ts`: cek otomatis sebelum export:
    - teks keluar safe area / terpotong,
-   - durasi di luar batas `TODO: mis. 15–45 dtk`,
+   - durasi 60 detik atau lebih (reel wajib di bawah 1 menit, keputusan pemilik 2026-11-10),
    - font selain Archivo (heading) dan Lexend (body),
    - hook muncul setelah detik ke-`TODO: 1.5`,
    - audio clipping / loudness di luar target `TODO: mis. -14 LUFS`,
@@ -190,6 +190,6 @@ Tutup dengan: daftar file kunci yang dibuat, perintah inti (maks 6 baris), dafta
 - [ ] TODO: fps final (30/60) dan safe area px
 - [ ] TODO: nilai palet Senja jika belum ada di repo, plus 2 tema alternatif
 - [ ] TODO: sumber voice over standar (suara sendiri / anggota tim / TTS) dan target loudness
-- [ ] TODO: batas durasi reel (min–max)
+- [x] batas durasi reel: di bawah 1 menit (2026-11-10)
 - [ ] TODO: nama & peran anggota tim untuk `WORKFLOW.md`
 - [ ] TODO: sample `vo.wav` untuk uji pipeline

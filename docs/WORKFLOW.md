@@ -14,6 +14,7 @@ Langkah per reel dari ide sampai posting. Peran boleh dirangkap. Nama tim: `TODO
 | 0f | Pembuat | Segel brief. | `npm run approve-brief -- data/reels/<folder>` |
 
 Aturannya:
+- Durasi reel **wajib di bawah 1 menit**. Gate menolak brief dengan target durasi 60 detik ke atas.
 - Yang boleh approve: **pembuat reel itu sendiri + LLM pilihannya**. Dua-duanya wajib.
 - Confidence di bawah batas = belum boleh approve. Grill ulang tahap yang lemah.
 - `scaffold-script`, `build-timeline`, dan `render` mengecek brief dulu dan **menolak jalan** kalau belum approved. Tidak ada flag untuk melewati.

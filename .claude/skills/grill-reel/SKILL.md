@@ -23,7 +23,7 @@ Kamu pewawancara kritis, bukan asisten yang menurut. Tugasmu memastikan reel ini
 **Tahap 1 — Tujuan & audiens**
 - Reel ini untuk satu orang spesifik: seller toko online seperti apa? (jualan di mana, omzet kasar, masalah apa yang lagi ia rasakan)
 - Setelah menonton, satu hal apa yang harus ia lakukan atau pikirkan? Hanya satu.
-- Kenapa reel ini, kenapa sekarang? Apa hipotesis yang sedang diuji? (Tautkan ke log iterasi: `TODO: path/format log iterasi`.)
+- Kenapa reel ini, kenapa sekarang? Apa hipotesis yang sedang diuji? (Log iterasi belum ada, ditunda pemilik: tulis hipotesisnya di brief saja.)
 - Metrik sukses yang diukur dan angka ambangnya (mis. retensi 3 detik, share, save, follow). Tanpa ambang, tidak ada pelajaran.
 
 **Tahap 2 — Hook & klaim kontrarian**
@@ -41,7 +41,7 @@ Kamu pewawancara kritis, bukan asisten yang menurut. Tugasmu memastikan reel ini
 
 **Tahap 4 — CTA & kesesuaian penawaran**
 - CTA satu aksi saja. Apa persisnya, dan apakah seller yang baru kenal kita akan benar-benar melakukannya?
-- Ada janji yang tidak bisa dipenuhi penawaran Niskala? (Cek ke `TODO: path file penawaran/pricing`.) Jangan ada klaim hasil yang tidak bisa dibuktikan.
+- Ada janji yang tidak bisa dipenuhi penawaran Niskala? (File penawaran/pricing belum ada, ditunda pemilik: jangan sebut harga atau janji hasil apa pun, dan tanya pembuat apa basis setiap janji.) Jangan ada klaim hasil yang tidak bisa dibuktikan.
 
 **Tahap 5 — Rencana visual**
 - Untuk setiap beat: aset mana dari library yang dipakai (UI, mockup, animasi) dan **kenapa aset itu**, bukan "biar bagus"?
@@ -50,7 +50,7 @@ Kamu pewawancara kritis, bukan asisten yang menurut. Tugasmu memastikan reel ini
 - Apakah ada kebutuhan aset baru? Kalau ya, kenapa aset yang ada tidak cukup? (Ikuti `docs/ADDING_ASSETS.md`.)
 
 **Tahap 6 — Produksi & risiko**
-- Siapa pengisi voice over, dan kapan? Target durasi? (`TODO: batas durasi dari SOP`)
+- Siapa pengisi voice over, dan kapan? Target durasi? Reel **wajib di bawah 1 menit** (batas di `config/brief-gate.json`). Kalau ceritanya butuh lebih, potong beat, jangan panjangkan reel.
 - Tiga hal paling mungkin salah di reel ini, dan tandanya kalau itu terjadi. Ini jadi dasar bagian "Kalau ada yang salah" di brief.
 - Apa yang akan diubah kalau retensi 3 detik jelek? Kalau share tinggi tapi follow nol?
 

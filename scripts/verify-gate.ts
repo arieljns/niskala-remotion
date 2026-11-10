@@ -73,6 +73,11 @@ try {
   const inflated = run("approve-brief.ts", folder);
   check("2c. confidence 97 vs rata-rata tahap 86 → ditolak (skor digelembungkan)", inflated.code !== 0 && inflated.out.includes("terlalu tinggi"), inflated.out.split("\n").slice(0, 4).join("\n"));
 
+  // 2d. Target duration of one minute or more: must fail.
+  writeFileSync(briefFile, brief.replace("- Target durasi: 30 detik", "- Target durasi: 1 menit"));
+  const tooLong = run("approve-brief.ts", folder);
+  check("2d. target durasi 1 menit → ditolak (reel harus di bawah 60 detik)", tooLong.code !== 0 && tooLong.out.includes("harus di bawah 60 detik"), tooLong.out.split("\n").slice(0, 4).join("\n"));
+
   // 3. Approve: check-brief must pass.
   writeFileSync(briefFile, brief);
   const approve = run("approve-brief.ts", folder);

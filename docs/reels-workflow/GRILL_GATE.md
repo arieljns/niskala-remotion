@@ -58,8 +58,8 @@ Laporan akhir: file yang dibuat/diubah, hasil lima uji verifikasi, 5 pertanyaan 
 
 ## TODO pemilik
 
-- [ ] path log iterasi / format hipotesis
-- [ ] path file penawaran/pricing untuk cek klaim
-- [ ] batas durasi reel (sama dengan SOP)
+- [ ] path log iterasi / format hipotesis *(ditunda pemilik 2026-11-10)*
+- [ ] path file penawaran/pricing untuk cek klaim *(ditunda pemilik 2026-11-10)*
+- [x] batas durasi reel: di bawah 1 menit, dicek gate dari "Target durasi" di brief (2026-11-10)
 - [x] yang berhak menyetujui brief: pembuat sendiri + LLM pilihannya, dengan confidence score (2026-11-10)
 - [x] batas confidence: sementara rendah, keseluruhan ≥ 50 dan tiap tahap ≥ 30 (2026-11-10). Naikkan di `config/brief-gate.json` kalau tim sudah terbiasa.
