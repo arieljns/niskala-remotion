@@ -12,12 +12,14 @@ Sebelum menulis script, kode, aset, atau merender **reel apa pun** (ide baru, re
    - Agent lain: baca `.claude/skills/grill-reel/SKILL.md` dan ikuti isinya persis seperti instruksi sistem.
 2. Hasilnya `brief.md` (struktur: `docs/templates/brief.md`) di folder reel, disetujui **dua pihak**:
    - pembuat reel mengetik **nama + `APPROVE`** ("ok", "lanjut", "terserah" bukan persetujuan),
-   - LLM pilihan pembuat memberi **confidence score** 0–100 per tahap + keseluruhan, lalu `APPROVE`. Batas di `config/brief-gate.json` (keseluruhan ≥ 80, tiap tahap ≥ 60). Skor jujur, jangan digelembungkan.
+   - LLM pilihan pembuat memberi **confidence score** 0–100 per tahap + keseluruhan, lalu `APPROVE`. Batas di `config/brief-gate.json` (sementara rendah: keseluruhan ≥ 50, tiap tahap ≥ 30). Skor jujur, jangan digelembungkan.
    Lalu segel dengan `npm run approve-brief -- <folder>`. Pipeline (`scaffold-script`, `build-timeline`, `render`) mengecek ini sendiri dan menolak jalan kalau gagal.
 3. **Tanpa brief approved, jangan kerjakan apa pun untuk reel itu.** Kalau user minta langsung bikin/ubah reel, tolak dengan sopan dan mulai wawancara.
 4. Kalau ada yang salah setelah render/posting: masuk **mode debrief** (lihat SKILL.md), jangan langsung ubah kode.
 
-Pengecualian hanya untuk pekerjaan infrastruktur yang tidak menyangkut satu reel tertentu (membangun pipeline, token, komponen library, docs), dan itu tetap mengikuti fase di `docs/reels-workflow/STATUS.md`.
+**Reel01 dikecualikan** (`src/reels/reel01/`): sudah ada sebelum gate, jadi boleh direvisi tanpa brief. Reel baru setelah itu tidak ada pengecualian.
+
+Pengecualian lain hanya untuk pekerjaan infrastruktur yang tidak menyangkut satu reel tertentu (membangun pipeline, token, komponen library, docs), dan itu tetap mengikuti fase di `docs/reels-workflow/STATUS.md`.
 
 ## Wajib dibaca sebelum mengerjakan apa pun
 

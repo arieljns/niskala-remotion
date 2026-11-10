@@ -8,7 +8,7 @@ Tujuannya satu: **apa pun yang dikerjakan, hasilnya konsisten dengan standar yan
 Sebelum script, kode, aset, atau render untuk **reel tertentu**: jalankan wawancara `grill-reel`
 (`.claude/skills/grill-reel/SKILL.md`; agent non-Claude baca file itu dan ikuti persis) sampai `brief.md`
 di folder reel disetujui **pembuat (nama + `APPROVE`) dan LLM pilihannya (confidence score ≥ batas + `APPROVE`)**, lalu disegel `npm run approve-brief`. Tanpa itu, jangan kerjakan apa pun untuk reel tersebut,
-walaupun user memintanya langsung. Detail: `GRILL_GATE.md`, langkah-langkah: `docs/WORKFLOW.md`. Cek gate: `npm run check-brief -- <folder>`.
+walaupun user memintanya langsung. Pengecualian satu-satunya: Reel01 (sudah ada sebelum gate). Detail: `GRILL_GATE.md`, langkah-langkah: `docs/WORKFLOW.md`. Cek gate: `npm run check-brief -- <folder>`.
 
 ## 1. Urutan baca (wajib, sebelum menyentuh kode)
 

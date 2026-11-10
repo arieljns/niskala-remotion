@@ -25,7 +25,8 @@ Format: `YYYY-MM-DD: keputusan (siapa yang memutuskan)`
 - 2026-11-10: Brief workflow disimpan di `docs/reels-workflow/BRIEF.md` sebagai sumber kebenaran (pemilik).
 - 2026-11-10: Grill gate wajib untuk setiap reel: tidak ada script/kode/render tanpa `brief.md` approved (pemilik).
 - 2026-11-10: Yang berhak approve brief = pembuat reel sendiri + LLM pilihannya, LLM wajib memberi confidence score per tahap + keseluruhan sebelum reel masuk pipeline (pemilik).
-- 2026-11-10: Batas confidence awal = keseluruhan ≥ 80, tiap tahap ≥ 60, keseluruhan maks rata-rata tahap + 5 (`config/brief-gate.json`; usulan agent, menunggu konfirmasi pemilik).
+- 2026-11-10: Batas confidence **sementara rendah**: keseluruhan ≥ 50, tiap tahap ≥ 30, keseluruhan maks rata-rata tahap + 5 (`config/brief-gate.json`). Dinaikkan nanti (pemilik).
+- 2026-11-10: **Reel01 dikecualikan dari grill gate** karena sudah dibuat sebelum gate ada. Revisinya boleh jalan tanpa brief. Tidak berlaku untuk reel lain (pemilik).
 - 2026-11-10: Font reels = **Archivo untuk heading, Lexend untuk body**. Menggantikan aturan "Archivo saja" di brief awal (pemilik).
 - 2026-11-10: Repo dibersihkan, hanya kode & aset Reels yang disisakan. Explainer lama, NiskalaStory, ChunkOne, dan aset yang tidak dipakai reels dihapus; masih bisa diambil dari git history di commit `1c254ff` (pemilik).
 
@@ -33,8 +34,6 @@ Format: `YYYY-MM-DD: keputusan (siapa yang memutuskan)`
 
 - [ ] path log iterasi / format hipotesis (grill tahap 1)
 - [ ] path file penawaran/pricing untuk cek klaim (grill tahap 4)
-- [ ] konfirmasi batas confidence (usulan: keseluruhan ≥ 80, tiap tahap ≥ 60)
-- [ ] Reel01 belum punya brief: grill dulu, atau dikecualikan karena sudah jalan sebelum gate?
 
 - [ ] fps final (30/60) dan safe area px
 - [ ] nilai palet Senja jika belum lengkap di repo, plus 2 tema alternatif

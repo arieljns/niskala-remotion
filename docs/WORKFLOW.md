@@ -10,7 +10,7 @@ Langkah per reel dari ide sampai posting. Peran boleh dirangkap. Nama tim: `TODO
 | 0b | Pembuat + LLM | Wawancara `grill-reel` sampai brief lengkap. Claude Code: `/grill-reel`. Agent lain: baca `.claude/skills/grill-reel/SKILL.md`. | |
 | 0c | Pembuat + LLM | Cek apa yang masih kurang. Ulangi 0b sampai bersih. | `npm run check-brief -- data/reels/<folder>` |
 | 0d | Pembuat | Ketik nama + `APPROVE` di bagian 9 brief. | |
-| 0e | LLM pilihan pembuat | Isi confidence score 0–100 per tahap + keseluruhan, alasan skor, lalu `APPROVE`. Batas: keseluruhan ≥ 80, tiap tahap ≥ 60 (`config/brief-gate.json`). | |
+| 0e | LLM pilihan pembuat | Isi confidence score 0–100 per tahap + keseluruhan, alasan skor, lalu `APPROVE`. Batas di `config/brief-gate.json` (sementara rendah: keseluruhan ≥ 50, tiap tahap ≥ 30). | |
 | 0f | Pembuat | Segel brief. | `npm run approve-brief -- data/reels/<folder>` |
 
 Aturannya:

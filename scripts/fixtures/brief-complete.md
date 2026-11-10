@@ -64,7 +64,7 @@ confidence:
 - Hasil penilaian pewawancara (lolos / perlu diulang di tahap X): Lolos
 
 ## 9. Persetujuan
-Dua-duanya wajib. Batas confidence ada di `config/brief-gate.json` (keseluruhan ≥ 80, tiap tahap ≥ 60).
+Dua-duanya wajib. Batas confidence ada di `config/brief-gate.json` (sementara rendah: keseluruhan ≥ 50, tiap tahap ≥ 30).
 
 ### Pembuat
 - Nama: Penguji Gate

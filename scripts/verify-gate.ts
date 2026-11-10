@@ -8,7 +8,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { REELS_DIR, REPO_ROOT } from "./lib/brief.ts";
+import { REELS_DIR, REPO_ROOT, loadConfig } from "./lib/brief.ts";
 
 const SLUG = "verify-gate-tmp";
 type Run = { code: number; out: string };
@@ -62,9 +62,11 @@ try {
 
   // 2b. Complete brief but confidence below threshold: must fail on the score.
   brief = readFileSync(join(REPO_ROOT, "scripts", "fixtures", "brief-complete.md"), "utf8").replace(/^id:.*$/m, `id: ${findFolder()}`);
-  writeFileSync(briefFile, brief.replace("- Confidence keseluruhan: 86", "- Confidence keseluruhan: 72"));
+  const { minOverallConfidence } = loadConfig();
+  const low = minOverallConfidence - 1;
+  writeFileSync(briefFile, brief.replace("- Confidence keseluruhan: 86", `- Confidence keseluruhan: ${low}`));
   const lowScore = run("approve-brief.ts", folder);
-  check("2b. confidence 72 (< 80) → approve-brief menolak", lowScore.code !== 0 && lowScore.out.includes("Confidence keseluruhan = 72"), lowScore.out.split("\n").slice(0, 4).join("\n"));
+  check(`2b. confidence ${low} (< ${minOverallConfidence}) → approve-brief menolak`, lowScore.code !== 0 && lowScore.out.includes(`Confidence keseluruhan = ${low}`), lowScore.out.split("\n").slice(0, 4).join("\n"));
 
   // 2c. Overall score inflated above the stage average: must fail.
   writeFileSync(briefFile, brief.replace("- Confidence keseluruhan: 86", "- Confidence keseluruhan: 97"));

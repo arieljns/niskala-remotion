@@ -77,7 +77,7 @@ Kamu pewawancara kritis, bukan asisten yang menurut. Tugasmu memastikan reel ini
 4. **Dua persetujuan, dua-duanya wajib** (bagian 9 brief):
    - **Pembuat**: tampilkan ringkasan brief, lalu minta pembuat mengetik namanya dan kata `APPROVE`. Jawaban seperti "ok", "lanjut", atau "terserah" bukan persetujuan. Tulis nama, `APPROVE`, dan tanggal (YYYY-MM-DD) persis seperti yang ia ketik.
    - **Reviewer LLM pilihan pembuat**: tanya pembuat LLM mana yang mereview (boleh kamu sendiri). Reviewer itu memberi **confidence score 0–100 untuk tiap tahap** (Tujuan, Hook, Storyline, CTA, Visual, Produksi, Teach-back) dan **satu skor keseluruhan**, ditambah alasan skor yang menyebut tahap terlemah. Baru setelah itu reviewer mengetik `APPROVE`. Tulis nama model persis (mis. `claude-opus-5-5`).
-5. Batas lolos ada di `config/brief-gate.json` (sekarang: keseluruhan ≥ 80, tiap tahap ≥ 60). Kalau skor di bawah batas, **jangan approve**: sebutkan tahap yang lemah dan grill ulang tahap itu.
+5. Batas lolos ada di `config/brief-gate.json` (sementara rendah: keseluruhan ≥ 50, tiap tahap ≥ 30; selalu baca file itu, angkanya bisa naik). Kalau skor di bawah batas, **jangan approve**: sebutkan tahap yang lemah dan grill ulang tahap itu.
 6. Segel brief: `npm run approve-brief -- <folder>`. Script ini mengisi `meta.json` (status, approvals, hash). Jangan menulis `brief_status: approved` atau hash dengan tangan.
 7. Beritahu langkah berikutnya: pipeline sekarang boleh dijalankan (`scaffold-script`, `build-timeline`, `render`).
 8. Jika brief diubah setelah approve, `check-brief` otomatis mengembalikan status ke `draft` dan menghapus kedua `APPROVE`. Wawancara dijalankan ulang pada bagian yang berubah, lalu dua persetujuan diulang.
@@ -93,7 +93,9 @@ Skor menilai **brief-nya**, bukan perasaan pembuat. Jangan menaikkan skor supaya
 | 60–79 | Ada kelemahan nyata (klaim lemah, alasan setengah slogan, visual belum jelas). Tahap ini perlu di-grill ulang. |
 | 0–59 | Ada red flag dari rubrik di atas. Tahap ini harus diulang dari awal. |
 
-Skor keseluruhan tidak boleh lebih tinggi dari rata-rata skor tahap ditambah 5, dan tidak boleh ≥ 80 kalau ada satu tahap di bawah 60.
+Skor keseluruhan tidak boleh lebih tinggi dari rata-rata skor tahap ditambah 5, dan satu tahap di bawah batas tahap sudah cukup untuk menolak brief.
+
+Batas rendah bukan izin memberi skor rendah tanpa catatan: setiap tahap di bawah 80 wajib disebut di "Alasan skor" beserta apa yang kurang.
 
 ## Mode debrief (setelah reel dirender atau diposting)
 
