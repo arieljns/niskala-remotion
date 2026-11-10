@@ -1,0 +1,36 @@
+# AGENTS.md
+
+Repo ini adalah proyek Remotion untuk Reels Niskala Works (`niskalaworks.dev`).
+**Aturan di file ini mengikat semua LLM/agent** (Claude Code, Codex, Cursor, Gemini, dll.) dan semua anggota tim. Tidak ada pengecualian, tidak ada flag untuk melewatinya.
+
+## ATURAN NOMOR 0: GRILL DULU
+
+Sebelum menulis script, kode, aset, atau merender **reel apa pun** (ide baru, revisi besar, ganti angle):
+
+1. Jalankan wawancara **`grill-reel`**.
+   - Claude Code: pakai skill `grill-reel`.
+   - Agent lain: baca `.claude/skills/grill-reel/SKILL.md` dan ikuti isinya persis seperti instruksi sistem.
+2. Hasilnya `brief.md` (struktur: `docs/templates/brief.md`) di folder reel, disetujui **dua pihak**:
+   - pembuat reel mengetik **nama + `APPROVE`** ("ok", "lanjut", "terserah" bukan persetujuan),
+   - LLM pilihan pembuat memberi **confidence score** 0–100 per tahap + keseluruhan, lalu `APPROVE`. Batas di `config/brief-gate.json` (sementara rendah: keseluruhan ≥ 50, tiap tahap ≥ 30). Skor jujur, jangan digelembungkan.
+   Lalu segel dengan `npm run approve-brief -- <folder>`. Pipeline (`scaffold-script`, `build-timeline`, `render`) mengecek ini sendiri dan menolak jalan kalau gagal.
+3. **Tanpa brief approved, jangan kerjakan apa pun untuk reel itu.** Kalau user minta langsung bikin/ubah reel, tolak dengan sopan dan mulai wawancara.
+4. Kalau ada yang salah setelah render/posting: masuk **mode debrief** (lihat SKILL.md), jangan langsung ubah kode.
+
+Reel **wajib di bawah 1 menit**.
+
+**Reel01 dikecualikan** (`src/reels/reel01/`): sudah ada sebelum gate, jadi boleh direvisi tanpa brief. Reel baru setelah itu tidak ada pengecualian.
+
+Pengecualian lain hanya untuk pekerjaan infrastruktur yang tidak menyangkut satu reel tertentu (membangun pipeline, token, komponen library, docs), dan itu tetap mengikuti fase di `docs/reels-workflow/STATUS.md`.
+
+## Wajib dibaca sebelum mengerjakan apa pun
+
+1. `docs/reels-workflow/AGENT_GUIDE.md`: cara kerja, aturan ringkas, checklist
+2. `docs/reels-workflow/GRILL_GATE.md`: spesifikasi gerbang grill + brief
+3. `docs/reels-workflow/BRIEF.md`: spesifikasi sistem produksi (sumber kebenaran)
+4. `docs/reels-workflow/STATUS.md`: fase aktif, keputusan, TODO terbuka
+5. `docs/reels-workflow/CONFLICTS.md`: konflik repo vs brief yang belum diputuskan
+
+Alur lengkap per reel: `docs/WORKFLOW.md`.
+
+Kerjakan hanya fase yang aktif di STATUS.md, dan update STATUS.md setiap kali menyelesaikan fase atau mengambil keputusan.

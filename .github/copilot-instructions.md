@@ -1,0 +1,1 @@
+Baca dan ikuti `AGENTS.md` di root repo sebelum melakukan apa pun. Aturan nomor 0: tidak ada script, kode, atau render untuk reel mana pun tanpa `brief.md` yang sudah di-APPROVE lewat wawancara `grill-reel` (`.claude/skills/grill-reel/SKILL.md`).

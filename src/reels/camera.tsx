@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
-import { Camera as StoryCamera } from "../story/components/Camera";
+import { Camera as StoryCamera } from "./CameraCore";
 import { CAMERA_ZOOM, EASINGS, FOCAL, MOTION, REEL, SAFE_ZONE } from "./tokens";
 import { wordTiming, type WordPace } from "./WordBuild";
 import type { Box, SentenceLayout } from "./wordLayout";

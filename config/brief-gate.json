@@ -1,0 +1,16 @@
+{
+  "minOverallConfidence": 50,
+  "minStageConfidence": 30,
+  "maxOverallAboveAverage": 5,
+  "minRiskRows": 3,
+  "maxDurationSecondsExclusive": 60,
+  "stages": [
+    "Tujuan",
+    "Hook",
+    "Storyline",
+    "CTA",
+    "Visual",
+    "Produksi",
+    "Teach-back"
+  ]
+}
