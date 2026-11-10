@@ -21,6 +21,8 @@ Status: `todo` · `next` · `in-progress` · `blocked` (tulis alasannya) · `don
 Format: `YYYY-MM-DD: keputusan (siapa yang memutuskan)`
 
 - 2026-11-10: Brief workflow disimpan di `docs/reels-workflow/BRIEF.md` sebagai sumber kebenaran (pemilik).
+- 2026-11-10: Font reels = **Archivo untuk heading, Lexend untuk body**. Menggantikan aturan "Archivo saja" di brief awal (pemilik).
+- 2026-11-10: Repo dibersihkan, hanya kode & aset Reels yang disisakan. Explainer lama, NiskalaStory, ChunkOne, dan aset yang tidak dipakai reels dihapus; masih bisa diambil dari git history di commit `1c254ff` (pemilik).
 
 ## TODO pemilik (masih terbuka)
 

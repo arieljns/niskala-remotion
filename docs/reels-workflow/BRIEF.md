@@ -26,7 +26,7 @@ Satu reel baru = satu folder data + satu perintah render. Tim tidak perlu menyen
 ## ATURAN KERAS (tidak boleh dilanggar)
 
 **Brand**
-- Font: **Archivo** (semua teks, tanpa pengecualian).
+- Font: **Archivo untuk heading/display, Lexend untuk body** (sub-line, eyebrow, teks kecil). *(Direvisi pemilik 2026-11-10, sebelumnya: "Archivo untuk semua teks".)*
 - Palet: **Senja**. Ambil nilai warna dari token/brand file yang sudah ada di repo. Kalau tidak ketemu, tulis `TODO` dan tanyakan, jangan mengarang hex.
 - Handle IG & domain: `niskalaworks.dev`.
 - Format: 1080×1920, `TODO: 30 atau 60 fps` (default 30), safe area atas/bawah untuk UI Instagram (`TODO: konfirmasi px`, usulkan default lalu tandai).
@@ -80,7 +80,7 @@ reels/
 
 ## FASE 1 — TOKENS & FONDASI
 
-- `tokens/`: warna Senja (dari repo, sisanya `TODO`), Archivo (weights yang dipakai), skala tipografi untuk 1080×1920, spacing, safe area, durasi & easing standar (satu set easing "Apple-like" yang dipakai semua animasi).
+- `tokens/`: warna Senja (dari repo, sisanya `TODO`), Archivo + Lexend (weights yang dipakai), skala tipografi untuk 1080×1920, spacing, safe area, durasi & easing standar (satu set easing "Apple-like" yang dipakai semua animasi).
 - **Tema warna**: minimal 3 tema (`senja` default + `TODO: 2 tema lain`) yang bisa di-switch dari `meta.json` tanpa ubah kode.
 - Verifikasi: komposisi `TokensPreview` menampilkan semua token.
 
@@ -123,7 +123,7 @@ Bangun scripts berikut (Node/Python, jalan lokal):
 4. `scripts/qa.ts`: cek otomatis sebelum export:
    - teks keluar safe area / terpotong,
    - durasi di luar batas `TODO: mis. 15–45 dtk`,
-   - font selain Archivo,
+   - font selain Archivo (heading) dan Lexend (body),
    - hook muncul setelah detik ke-`TODO: 1.5`,
    - audio clipping / loudness di luar target `TODO: mis. -14 LUFS`,
    - kata kunci terlarang (kutipan sumber berita) di `script.md`.

@@ -27,7 +27,7 @@ Kalau ada yang bertentangan: **BRIEF.md > keputusan tercatat di STATUS.md > kode
 ## 3. Aturan keras (ringkas, detail di BRIEF.md)
 
 **Brand**
-- Font Archivo (lihat CONFLICTS.md soal Lexend/Manrope yang masih ada di repo).
+- Font: **Archivo untuk heading/display, Lexend untuk body**. Loader-nya ada di `src/theme/fonts.ts` (`displayFont`, `eyebrowFont`). Manrope/Inter di dalam layar perangkat masih belum diputuskan, lihat CONFLICTS.md.
 - Palet Senja, nilainya diambil dari token di repo. Jangan mengarang hex.
 - Handle & domain: `niskalaworks.dev`.
 - 1080×1920, fps dan safe area: lihat STATUS.md (masih TODO sampai pemilik isi).
@@ -58,7 +58,7 @@ Perintah persisnya ditulis di `docs/README.md` setelah Fase 5 selesai. Sampai sa
 - [ ] Hanya mengerjakan fase yang aktif di STATUS.md
 - [ ] Verifikasi fase sudah dijalankan dan lolos (sertakan output-nya)
 - [ ] Tidak ada hardcode teks/warna/angka di komponen
-- [ ] Tidak ada font/warna di luar aturan brand (atau sudah dicatat di CONFLICTS.md)
+- [ ] Heading pakai Archivo, body pakai Lexend; tidak ada font/warna lain di luar aturan brand (atau sudah dicatat di CONFLICTS.md)
 - [ ] Teks tidak terpotong dan tetap di dalam safe area
 - [ ] Tidak ada kutipan berita/sumber, tidak ada merek asli
 - [ ] STATUS.md sudah diupdate (fase, keputusan, TODO)

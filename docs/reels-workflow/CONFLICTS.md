@@ -5,12 +5,11 @@ ajukan opsi ke pemilik di Fase 0, lalu catat keputusannya di `STATUS.md`.
 
 | # | Brief bilang | Repo sekarang | Lokasi |
 |---|---|---|---|
-| 1 | Font **Archivo saja**, semua teks tanpa pengecualian | Sistem Senja memakai Archivo (wdth 125) untuk display **+ Lexend** untuk sub-line/eyebrow | `src/theme/fonts.ts` |
-| 2 | Archivo untuk semua teks | UI klien di dalam layar perangkat (toko demo "Toko Anda") memakai **Manrope** (+ Inter untuk chat) dan palet lama cream/ink/sienna | `src/components/mocks/`, `src/fonts.ts`, `src/theme/fonts.ts` |
-| 3 | Struktur `src/tokens/`, `components/{ui,mockups,motion}`, `scenes/`, `templates/`, `gallery/` | Kode tersebar: `src/tokens.ts`, `src/theme/`, `src/reels/`, `src/story/`, `src/components/`, `src/scenes/` | seluruh `src/` |
+| 2 | Archivo (heading) + Lexend (body) untuk semua teks | UI klien di dalam layar perangkat (toko demo, layar iOS) memakai **Manrope** (+ Inter untuk chat) dan palet klien | `src/theme/fonts.ts`, `src/theme/client.ts`, `src/reels/ui/ios/` |
+| 3 | Struktur `src/tokens/`, `components/{ui,mockups,motion}`, `scenes/`, `templates/`, `gallery/` | Kode ada di `src/reels/` (primitif + `reel01/` + `ui/ios/`) dan `src/theme/` (senja, client, motion, fonts) | seluruh `src/` |
 | 4 | Data reel di `data/reels/<YYYYMMDD-slug>/` dari `timeline.json` | Reel 01 memakai `timeline.ts` + `copy.ts` hardcode di kode | `src/reels/reel01/` |
 | 5 | Root folder `reels/` | Repo root sendiri adalah proyek Remotion | root repo |
 
-Catatan untuk #1 dan #2: aturan brand yang berlaku di repo sejauh ini adalah "token Senja hanya di luar layar perangkat, token klien hanya di dalam layar perangkat". Tanyakan ke pemilik apakah aturan "Archivo saja" di brief menggantikan aturan itu, atau hanya berlaku untuk lapisan Niskala.
+Catatan untuk #2: font lapisan Niskala sudah diputuskan (Archivo heading + Lexend body, lihat STATUS.md). Yang masih terbuka: apakah UI fiktif di dalam layar perangkat boleh tetap pakai Manrope/Inter supaya terlihat seperti aplikasi asli, atau ikut Archivo/Lexend.
 
 Kalau konflik sudah diputuskan, pindahkan barisnya ke bagian "Keputusan" di `STATUS.md` dan hapus dari tabel ini.

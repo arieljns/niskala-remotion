@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { TapRipple } from "../../story/components/TapRipple";
+import { TapRipple } from "../TapRipple";
 import { MistBackground } from "../Backgrounds";
 import { Camera, cameraAt, World, type CameraKeyframe, type CameraState } from "../camera";
 import type { BoxCheck } from "../debug";

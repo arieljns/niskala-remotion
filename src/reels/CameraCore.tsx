@@ -1,4 +1,4 @@
-import { useLayout } from "../../useLayout";
+import { useLayout } from "../useLayout";
 
 export type CameraProps = {
   /** Logical size of the content being filmed (e.g. 393x852 for a phone PNG). */

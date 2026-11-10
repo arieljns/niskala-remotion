@@ -1,6 +1,6 @@
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { CLIENT } from "../../theme/client";
-import { STORY_SPRING, withAlpha } from "../../theme/motion";
+import { CLIENT } from "../theme/client";
+import { STORY_SPRING, withAlpha } from "../theme/motion";
 
 export type TapRippleProps = {
   /** Tap point in the device screen's logical coordinates. */

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { TapRipple } from "../../story/components/TapRipple";
+import { TapRipple } from "../TapRipple";
 import { MistBackground, NightBackground } from "../Backgrounds";
 import { COLORS, FOCAL, SHADOWS } from "../tokens";
 import { IKUTI_BOX, PROFILE_CARD, ProfileHeaderCard, SafariUrlBar } from "../ui/ios/Floating";
