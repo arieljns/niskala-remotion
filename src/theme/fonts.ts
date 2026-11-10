@@ -31,7 +31,7 @@ const archivo = loadFontFile({
 
 const lexend = loadLexend("normal", { weights: ["300", "400", "600"], subsets: ["latin"] });
 const manrope = loadManrope("normal", { weights: ["400", "500", "600", "700", "800"], subsets: ["latin"] });
-const inter = loadInter("normal", { weights: ["400", "500", "600"], subsets: ["latin"] });
+const inter = loadInter("normal", { weights: ["400", "500", "600", "700"], subsets: ["latin"] });
 
 export const FONTS = {
   display: ARCHIVO_FAMILY,

@@ -16,8 +16,8 @@ const BLOBS = [
 const BLOB_GRADIENT = `radial-gradient(closest-side, ${withAlpha(COLORS.mistBlob, 1)} 0%, ${withAlpha(COLORS.mistBlob, 0.72)} 30%, ${withAlpha(COLORS.mistBlob, 0.36)} 55%, ${withAlpha(COLORS.mistBlob, 0.12)} 78%, ${withAlpha(COLORS.mistBlob, 0.03)} 92%, ${withAlpha(COLORS.mistBlob, 0)} 100%)`;
 
 /** Outside the camera: it drifts but never zooms. */
-export const MistBackground: React.FC = () => {
-  const frame = useCurrentFrame();
+export const MistBackground: React.FC<{ frameOffset?: number }> = ({ frameOffset = 0 }) => {
+  const frame = useCurrentFrame() + frameOffset;
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.mist, overflow: "hidden" }}>

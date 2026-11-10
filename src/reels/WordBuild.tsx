@@ -2,9 +2,12 @@ import { interpolate, useCurrentFrame } from "remotion";
 import { COLORS, EASINGS, MOTION } from "./tokens";
 import { ARROW, toneStyle, type SentenceLayout } from "./wordLayout";
 
+/** A fixed gap between words, or each word's own start frame. */
+export type WordPace = number | readonly number[];
+
 /** Frame each word starts entering, and the frame the last one has settled. */
-export function wordTiming(layout: SentenceLayout, startFrame: number, gap: number) {
-  const starts = layout.words.map((_, index) => startFrame + index * gap);
+export function wordTiming(layout: SentenceLayout, startFrame: number, pace: WordPace) {
+  const starts = layout.words.map((_, index) => (typeof pace === "number" ? startFrame + index * pace : pace[index]));
   return { starts, settled: starts[starts.length - 1] + MOTION.wordIn };
 }
 
@@ -32,7 +35,7 @@ const ArrowGlyph: React.FC<{ width: number }> = ({ width }) => (
 export type WordBuildProps = {
   layout: SentenceLayout;
   startFrame: number;
-  gap?: number;
+  gap?: WordPace;
   color?: string;
   accentColor?: string;
   textShadow?: string;

@@ -1,129 +1,127 @@
 import { useMemo } from "react";
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
-import { AssetSlot } from "../AssetSlot";
+import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { MistBackground } from "../Backgrounds";
-import { Camera, fitCamera, sentenceCamera, World, type CameraKeyframe, type CameraState } from "../camera";
-import type { BoxCheck, SentenceCheck } from "../debug";
-import { ExitText } from "../ExitText";
-import { LebayWord, squashScale, SQUASH_FRAMES } from "../LebayWord";
-import {
-  chartPath,
-  FLAT_LINE_CONTACT,
-  FLAT_LINE_FRAMES,
-  FlatLine,
-  lineProgress,
-  lineTip,
-  pointsBounds,
-  priceSeries,
-  RisingLine,
-} from "../lines";
+import { Camera, fitCamera, sentenceCamera, World, type CameraKeyframe } from "../camera";
+import type { BoxCheck } from "../debug";
+import { LebayWord, punchScale, squashScale, SQUASH_FRAMES } from "../LebayWord";
+import { FLAT_LINE_CONTACT, FLAT_LINE_FRAMES, FlatLine, chartPath, pointsBounds, priceSeries, RisingLine } from "../lines";
 import { Shake } from "../Shake";
-import { CAMERA_ZOOM, COLORS, EASINGS, MOTION, SHADOWS, TYPE } from "../tokens";
+import { CAMERA_ZOOM, COLORS, MOTION, TYPE } from "../tokens";
 import { WordBuild, wordTiming } from "../WordBuild";
-import { layoutSentence, measureWidth, scaleBox, unionBox } from "../wordLayout";
-import { SCENES } from "./timeline";
+import { PhoneShell } from "../ui/ios/PhoneShell";
+import { SEARCH_HERO_CARD, SEARCH_SINK, SearchResults } from "../ui/ios/SearchResults";
+import { PHONE, PHONE_OUTER } from "../ui/ios/tokens";
+import { layoutSentence, scaleBox, unionBox } from "../wordLayout";
+import { timedCheck, type TimedCheck } from "./timedCheck";
+import { WORD_TIMES } from "./copy";
+import { CUE_LEAD, cueStart, voiceStarts, type SceneTiming } from "./timeline";
 
 /**
  * S3-S5 share one world so the camera pans between them with no cut. S4 sits
  * above S3; S5 sits up and to the right of S4, along the rising line. The gaps
- * keep each area out of the others' framing. Frames are local to this Sequence.
+ * keep each area out of the others' framing. Frames are local to this Sequence,
+ * which starts with S3.
  */
-const SCENE_START = SCENES.reasons.from;
-const S3_AT = { x: 502, y: 3100 };
+const S3_AT = { x: 502 };
 const S4_AT = { x: 502, y: 1200 };
 const S5_AT = { x: 1800, y: 900 };
 
 /* S3 */
-const TEXT_A_START = -2;
-const CAMERA_TO_STACK = 6;
-const TEXT_A_OUT = 45;
-const TEXT_B_START = TEXT_A_OUT + MOTION.out;
-const PILL_MOVE = 16;
-const PILL_STAGGER = 8;
-const PILL_FIRST = 12;
-const PILLS_LANDED = PILL_FIRST + PILL_STAGGER * 2 + PILL_MOVE;
-const SINK_FRAMES = 30;
-const PILL_HEIGHT = 120;
-const PILL_GAP = 40;
-/** easePop over a 900 px flight overshoots ~100 px; a little is the bounce, more leaves the safe zone. */
-const PILL_MAX_OVERSHOOT = 24;
-const PILL_PADDING = 56;
-/** Set right of the text, so following "tenggelam" doesn't push the stack off the left edge. */
-const STACK_OFFSET_X = 185;
+/** World pixels per phone point. */
+const S3_PHONE_SCALE = 1.15;
+const S3_PHONE = { width: PHONE_OUTER.width * S3_PHONE_SCALE, height: PHONE_OUTER.height * S3_PHONE_SCALE };
+/** The block's centre: far enough below S4 that the phone never shows in S4's frame. */
+const S3_CENTER_Y = 2970;
+const S3_TEXT_GAP = 30;
+const S3_QUESTION = ["~~Gak ikut~~ __promo?__"] as const;
+/** The allowed push onto the hero card, so viewers clock it as theirs. */
+const S3_PUSH_ZOOM = 1.15;
+const S3_PULL_FRAMES = 16;
+const S3_SINK_SPRING = { damping: 20, stiffness: 120, mass: 1 } as const;
 
-const PROMOS = [
-  { id: "TODO_PROMO_FLASH_SALE", label: "Flash sale", offsetX: 0, landing: -4, sinkTurn: -12 },
-  { id: "TODO_PROMO_TANGGAL_KEMBAR", label: "Diskon tanggal kembar", offsetX: 0, landing: 3, sinkTurn: 9 },
-  { id: "TODO_PROMO_GRATIS_ONGKIR", label: "Gratis ongkir", offsetX: 8, landing: -2, sinkTurn: -7 },
-] as const;
-
-/* S3 to S4 */
-const PAN_UP = 21;
+/**
+ * The VO leaves only the pads between scenes, so these run faster than v1's 21
+ * and 18 f. The next sentence's first word starts just inside the pan, as in v1.
+ */
+const PAN_UP = 14;
+const PAN_UP_WORD_LEAD = 10;
+const PAN_RIGHT = 12;
+const PAN_RIGHT_WORD_LEAD = 3;
 
 /* S4 */
-const S4_WORDS_START = 121;
-const LINE_START_AFTER_HOLD = MOTION.stillBeforeHit;
-const LINE_FRAMES = 30;
 const CHART_CURVE = 3.2;
 const CHART_FROM = { x: S4_AT.x - 468, y: S4_AT.y + 400 };
 const CHART_TO = { x: S4_AT.x + 430, y: S4_AT.y - 420 };
 // TODO_CHART_FIGURES: real values with a source go here. The chart carries no numbers until then.
-
-/* S4 to S5 */
-const CHART_HOLD_FRAMES = 21;
-const PAN_RIGHT = 18;
+/** Frames after the first word before the camera leaves it, so the rising line is seen, not just its end. */
+const S4_TO_FIT_DELAY = 11;
+/** Starts early so the word is near its peak on the cue: this is the one moment that has to hit exactly. */
+const NAIK_BEFORE_CUE = 6;
+const NAIK_PEAK_SCALE = 1.15;
 
 /* S5 */
 const S5_TEXT_LEFT = S5_AT.x - 300;
-export function useReasons() {
-  return useMemo(() => {
-    /* ---------- S3 layout ---------- */
-    const textLeft = S3_AT.x - 405;
-    const textTop = S3_AT.y - 360;
-    const textA = layoutSentence({
-      lines: ["~~Gak ikut~~ __promo?__"],
-      style: TYPE.sentence,
-      topLeft: { x: textLeft, y: textTop },
-    });
-    const textB = layoutSentence({
-      lines: ["~~Toko kamu~~ **tenggelam**."],
-      style: TYPE.sentence,
-      topLeft: { x: textLeft, y: textTop },
-    });
-    const pills = PROMOS.map((promo, index) => ({
-      ...promo,
-      x: textLeft + STACK_OFFSET_X + promo.offsetX,
-      y: textTop + textA.box.height + 60 + index * (PILL_HEIGHT + PILL_GAP),
-      width: measureWidth(promo.label, TYPE.uiLabel) + PILL_PADDING * 2,
-      height: PILL_HEIGHT,
-      start: PILL_FIRST + index * PILL_STAGGER,
-    }));
-    const stack = unionBox(textA.box, ...pills);
-    const stackCamera = fitCamera(stack, CAMERA_ZOOM.stack);
+/** squashScale's snap into its tallest pose, which is what reads as the landing. */
+const SQUASH_LANDS_AT = 8;
+const FLAT_LINE_DELAY = 2;
+const S5_FIT_FRAMES = MOTION.pullBack;
 
-    /* ---------- S3 camera ---------- */
-    const aCamera = sentenceCamera({
-      layout: textA,
-      startFrame: TEXT_A_START,
-      pullStart: CAMERA_TO_STACK,
-      target: stackCamera,
+export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s5: SceneTiming }) {
+  return useMemo(() => {
+    const s4From = s4.from - s3.from;
+    const s5From = s5.from - s3.from;
+    const durationInFrames = s5From + s5.durationInFrames;
+
+    /* ---------- S3 layout ---------- */
+    // Laid out once to measure it, then placed: the headline stays over the phone, left-aligned to itself.
+    const measured = layoutSentence({ lines: S3_QUESTION, style: TYPE.sentence, center: { x: S3_AT.x, y: S3_CENTER_Y } });
+    const textLeft = measured.box.x;
+    const blockTop = S3_CENTER_Y - (measured.box.height * 2 + S3_TEXT_GAP + S3_PHONE.height) / 2;
+    const textA = layoutSentence({ lines: S3_QUESTION, style: TYPE.sentence, topLeft: { x: textLeft, y: blockTop } });
+    const textB = layoutSentence({
+      lines: ["**Tenggelam.**"],
+      style: TYPE.sentence,
+      topLeft: { x: textLeft, y: blockTop + textA.box.height },
     });
-    const bCamera = sentenceCamera({
-      layout: textB,
-      startFrame: TEXT_B_START,
-      enter: { from: stackCamera, frame: TEXT_A_OUT, duration: 14 },
-      // The stack is still on screen under this sentence and may only leave by sinking.
-      followAmount: 0.2,
-    });
-    const bHoldCamera = fitCamera(textB.box);
-    const sinkStart = wordTiming(textB, TEXT_B_START, MOTION.wordGap).settled;
-    const panUpStart = bCamera.holdStart + MOTION.holdMin;
+    const phone = {
+      x: S3_AT.x - S3_PHONE.width / 2,
+      y: blockTop + textA.box.height * 2 + S3_TEXT_GAP,
+      ...S3_PHONE,
+    };
+    const heroCard = {
+      x: phone.x + (PHONE.bezel + SEARCH_HERO_CARD.x) * S3_PHONE_SCALE,
+      y: phone.y + (PHONE.bezel + SEARCH_HERO_CARD.y) * S3_PHONE_SCALE,
+      width: SEARCH_HERO_CARD.width * S3_PHONE_SCALE,
+      height: SEARCH_HERO_CARD.height * S3_PHONE_SCALE,
+    };
+
+    /* ---------- S3 timing and camera ---------- */
+    const aGap = voiceStarts(s3, WORD_TIMES.s3Question);
+    const textAStart = aGap[0];
+    const textBStart = cueStart(s3, 1);
+    const sinkStart = textBStart;
+    const s3Wide = fitCamera(unionBox(textA.box, textB.box, phone));
+    const s3Push = fitCamera(unionBox(textA.box, textB.box, heroCard), S3_PUSH_ZOOM);
+    const s3PullEnd = textBStart + S3_PULL_FRAMES;
+    const textASettled = wordTiming(textA, textAStart, aGap).settled;
+    const textBSettled = wordTiming(textB, textBStart, MOTION.wordGap).settled;
+    const bHoldCamera = s3Wide;
 
     /* ---------- S4 layout ---------- */
     const s4Text = layoutSentence({
-      lines: ["__Biaya marketing__", "**naik** ~~terus.~~"],
+      lines: ["__Biaya iklan__"],
       style: TYPE.sentence,
       topLeft: { x: CHART_FROM.x, y: S4_AT.y - 590 },
+    });
+    const naik = layoutSentence({
+      lines: ["NAIK"],
+      style: TYPE.punch,
+      topLeft: { x: CHART_FROM.x, y: s4Text.box.y + s4Text.box.height + 20 },
+    });
+    const terus = layoutSentence({
+      lines: ["~~terus.~~"],
+      style: TYPE.sentence,
+      topLeft: { x: CHART_FROM.x, y: naik.box.y + naik.box.height },
     });
     const linePoints = priceSeries({
       seed: "reel01-marketing-cost",
@@ -134,36 +132,28 @@ export function useReasons() {
       curve: CHART_CURVE,
     });
     const lineBounds = pointsBounds(linePoints, 30);
-    const s4Fit = fitCamera(unionBox(s4Text.box, lineBounds));
+    const s4Fit = fitCamera(unionBox(s4Text.box, scaleBox(naik.box, NAIK_PEAK_SCALE), terus.box, lineBounds));
 
-    /* ---------- S4 camera ---------- */
+    /* ---------- S4 timing ---------- */
+    const s4Start = s4From + cueStart(s4, 0);
+    const naikCue = s4From + s4.cues[1];
+    const naikStart = naikCue - NAIK_BEFORE_CUE;
+    const terusStart = s4From + voiceStarts(s4, [WORD_TIMES.s4Terus])[0];
+    const terusSettled = terusStart + MOTION.wordIn;
+    const lineStart = s4From + s4.cues[0];
+    const lineFrames = naikCue - lineStart;
+    const lineEnd = naikCue;
+    const panUpStart = s4Start - PAN_UP_WORD_LEAD;
+
+    const s4Gap = voiceStarts(s4, WORD_TIMES.s4Biaya).map((frame) => frame + s4From);
     const s4Camera = sentenceCamera({
       layout: s4Text,
-      startFrame: S4_WORDS_START,
+      startFrame: s4Start,
+      gap: s4Gap,
       enter: { from: bHoldCamera, frame: panUpStart, duration: PAN_UP },
+      pullStart: s4Start + S4_TO_FIT_DELAY,
+      target: s4Fit,
     });
-    const lineStart = s4Camera.holdStart + LINE_START_AFTER_HOLD;
-    const chaseEnd = lineStart + LINE_FRAMES - 8;
-    const sentenceHold: CameraState = fitCamera(s4Text.box);
-    const chase: CameraKeyframe[] = [];
-    for (let frame = lineStart; frame <= chaseEnd; frame++) {
-      // Chases the chart's smooth trend: following every small move of the tip would shake the camera.
-      const tipX = lineTip(chartPath(linePoints), lineProgress(frame, lineStart, LINE_FRAMES)).x;
-      const across = (tipX - CHART_FROM.x) / (CHART_TO.x - CHART_FROM.x);
-      const tip = { x: tipX, y: CHART_FROM.y + (CHART_TO.y - CHART_FROM.y) * Math.pow(across, CHART_CURVE) };
-      const mix = EASINGS.camera(Math.min(1, (frame - lineStart) / 8));
-      chase.push({
-        frame,
-        x: sentenceHold.x + (tip.x - sentenceHold.x) * mix,
-        y: sentenceHold.y + (tip.y - sentenceHold.y) * mix,
-        s: sentenceHold.s + (CAMERA_ZOOM.lineChase - sentenceHold.s) * mix,
-        ease: "linear",
-      });
-    }
-    const s4FitReady = chaseEnd + MOTION.pullBack;
-    const lineEnd = lineStart + LINE_FRAMES;
-    const panRightStart = lineEnd + CHART_HOLD_FRAMES + 7;
-    const panRightEnd = panRightStart + PAN_RIGHT;
 
     /* ---------- S5 layout ---------- */
     const omzet = layoutSentence({
@@ -204,108 +194,150 @@ export function useReasons() {
     const s5Fit = fitCamera(unionBox(omzet.box, segituPeak, aja.box, flatBounds));
 
     /* ---------- S5 timing ---------- */
-    const omzetStart = panRightEnd - 3;
+    const omzetStart = s5From + cueStart(s5, 0);
+    const panRightEnd = omzetStart + PAN_RIGHT_WORD_LEAD;
+    const panRightStart = panRightEnd - PAN_RIGHT;
     const omzetCamera = fitCamera(omzet.box, CAMERA_ZOOM.follow);
-    const omzetSettled = omzetStart + MOTION.wordIn;
-    const flatStart = omzetSettled;
-    const s5FitReady = omzetSettled + MOTION.pullBack;
+    const flatStart = omzetStart + FLAT_LINE_DELAY;
     const flatSettled = flatStart + FLAT_LINE_FRAMES;
-    const squashStart = flatSettled + MOTION.stillBeforeHit;
-    const ajaStart = squashStart + SQUASH_FRAMES;
+    const segituLanding = s5From + s5.cues[1];
+    const squashStart = segituLanding - SQUASH_LANDS_AT;
+    // Framed before the squash starts: its widest pose is its first frame.
+    const s5FitReady = squashStart;
+    const s5FitStart = s5FitReady - S5_FIT_FRAMES;
+    const ajaStart = Math.max(squashStart + SQUASH_FRAMES, s5From + voiceStarts(s5, [WORD_TIMES.s5Aja])[0]);
     const ajaSettled = ajaStart + MOTION.wordIn;
-    const end = ajaSettled + MOTION.holdMin;
+    const end = durationInFrames;
 
     const keyframes: CameraKeyframe[] = [
-      ...aCamera.keyframes,
-      ...bCamera.keyframes,
+      { frame: 0, ...s3Wide },
+      { frame: textBStart, ...s3Push },
+      { frame: s3PullEnd, ...s3Wide },
+      { frame: panUpStart - 1, ...bHoldCamera, ease: "linear" },
       ...s4Camera.keyframes,
-      ...chase,
-      { frame: s4FitReady, ...s4Fit },
       { frame: panRightStart, ...s4Fit, ease: "linear" },
       { frame: panRightEnd, ...omzetCamera },
-      { frame: omzetSettled, ...omzetCamera, ease: "linear" },
+      { frame: s5FitStart, ...omzetCamera, ease: "linear" },
       { frame: s5FitReady, ...s5Fit },
     ];
 
-    /* ---------- dev checks ---------- */
-    const sentenceChecks: SentenceCheck[] = [
-      {
-        id: "S3 text A",
-        sceneStart: SCENE_START,
+    /* ---------- dev checks: frames here are local to the Sequence, so S4/S5 scenes shift by their offset ---------- */
+    const shared = (scene: SceneTiming, from: number): SceneTiming => ({
+      ...scene,
+      from: s3.from,
+      cues: scene.cues.map((cue) => cue + from),
+      voEnd: scene.voEnd + from,
+    });
+    const s4Shared = shared(s4, s4From);
+    const s5Shared = shared(s5, s5From);
+    const sentenceChecks: TimedCheck[] = [
+      timedCheck({
+        id: "S3 Gak ikut promo?",
+        scene: s3,
+        cue: s3.cues[0],
         layout: textA,
         keyframes,
-        starts: aCamera.starts,
-        holdStart: aCamera.holdStart,
-        holdEnd: TEXT_A_OUT,
-      },
-      {
-        id: "S3 text B",
-        sceneStart: SCENE_START,
+        starts: aGap,
+        holdStart: textASettled,
+        holdEnd: panUpStart,
+      }),
+      timedCheck({
+        id: "S3 Tenggelam.",
+        scene: s3,
+        cue: s3.cues[1],
         layout: textB,
         keyframes,
-        starts: bCamera.starts,
-        holdStart: bCamera.holdStart,
+        starts: wordTiming(textB, textBStart, MOTION.wordGap).starts,
+        holdStart: textBSettled,
         holdEnd: panUpStart,
-      },
-      {
-        id: "S4 text",
-        sceneStart: SCENE_START,
+      }),
+      timedCheck({
+        id: "S4 Biaya iklan",
+        scene: s4Shared,
+        cue: s4Shared.cues[0],
         layout: s4Text,
         keyframes,
         starts: s4Camera.starts,
         holdStart: s4Camera.holdStart,
-        holdEnd: lineStart,
-        minHold: MOTION.stillBeforeHit,
-      },
-      {
+        holdEnd: panRightStart,
+      }),
+      timedCheck({
+        id: "S4 NAIK",
+        scene: s4Shared,
+        cue: naikCue,
+        layout: naik,
+        keyframes,
+        starts: [naikStart],
+        holdStart: naikStart + 14,
+        holdEnd: panRightStart,
+      }),
+      timedCheck({
+        id: "S4 terus.",
+        scene: s4Shared,
+        cue: terusStart + CUE_LEAD,
+        layout: terus,
+        keyframes,
+        starts: [terusStart],
+        holdStart: terusSettled,
+        holdEnd: panRightStart,
+      }),
+      timedCheck({
         id: "S5 Omzet?",
-        sceneStart: SCENE_START,
+        scene: s5Shared,
+        cue: s5Shared.cues[0],
         layout: omzet,
         keyframes,
         starts: [omzetStart],
         holdStart: s5FitReady,
         holdEnd: end,
-      },
-      {
+      }),
+      timedCheck({
         id: "S5 aja.",
-        sceneStart: SCENE_START,
+        scene: s5Shared,
+        cue: ajaStart + CUE_LEAD,
         layout: aja,
         keyframes,
         starts: [ajaStart],
         holdStart: ajaSettled,
         holdEnd: end,
-      },
+      }),
     ];
     const boxChecks: BoxCheck[] = [
       {
-        id: "S3 promo stack",
-        sceneStart: SCENE_START,
+        id: "S3 hero card on the push",
+        sceneStart: s3.from,
         keyframes,
-        from: PILLS_LANDED,
-        to: TEXT_A_OUT,
-        boxAt: () => unionBox(...pills),
+        from: textBStart,
+        to: textBStart,
+        boxAt: () => heroCard,
       },
       {
-        id: "S3 promo stack stays on screen until it sinks",
-        sceneStart: SCENE_START,
+        id: "S3 headline + phone",
+        sceneStart: s3.from,
         keyframes,
-        from: PILLS_LANDED,
-        to: sinkStart,
-        // 2% covers the corners of the tilted pills.
-        boxAt: () => scaleBox(unionBox(...pills), 1.02),
-        area: "frame",
+        from: s3PullEnd,
+        to: panUpStart - 1,
+        boxAt: () => unionBox(textA.box, textB.box, phone),
+      },
+      {
+        id: "S4 NAIK including overshoot",
+        sceneStart: s3.from,
+        keyframes,
+        from: lineEnd,
+        to: panRightStart,
+        boxAt: (frame) => scaleBox(naik.box, punchScale(frame - naikStart)),
       },
       {
         id: "S4 line + sentence",
-        sceneStart: SCENE_START,
+        sceneStart: s3.from,
         keyframes,
-        from: s4FitReady,
+        from: lineEnd,
         to: panRightStart,
-        boxAt: () => unionBox(s4Text.box, lineBounds),
+        boxAt: () => unionBox(s4Text.box, naik.box, terus.box, lineBounds),
       },
       {
         id: "S5 Segitu-segitu including overshoot",
-        sceneStart: SCENE_START,
+        sceneStart: s3.from,
         keyframes,
         from: squashStart,
         to: end,
@@ -316,7 +348,7 @@ export function useReasons() {
       },
       {
         id: "S5 flat line",
-        sceneStart: SCENE_START,
+        sceneStart: s3.from,
         keyframes,
         from: flatSettled,
         to: end,
@@ -325,98 +357,61 @@ export function useReasons() {
     ];
 
     return {
+      durationInFrames,
       textA,
       textB,
-      pills,
+      textAStart,
+      aGap,
+      textBStart,
+      phone,
       sinkStart,
+      panUpEnd: panUpStart + PAN_UP,
       s4Text,
+      s4Start,
+      s4Gap,
+      naik,
+      naikStart,
+      naikCue,
+      terus,
+      terusStart,
       linePoints,
       lineBounds,
       lineStart,
+      lineFrames,
       lineEnd,
       omzet,
       omzetStart,
       segitu,
+      segituLanding,
       aja,
       flatD,
       flatBounds,
       flatStart,
       squashStart,
       ajaStart,
-      end,
       keyframes,
       sentenceChecks,
       boxChecks,
     };
-  }, []);
+  }, [s3, s4, s5]);
 }
 
-const Pill: React.FC<{ label: string }> = ({ label }) => (
-  <div
-    style={{
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      whiteSpace: "pre",
-      borderRadius: PILL_HEIGHT / 2,
-      background: COLORS.card,
-      boxShadow: SHADOWS.card,
-      color: COLORS.ink,
-      fontFamily: TYPE.uiLabel.fontFamily,
-      fontWeight: TYPE.uiLabel.fontWeight,
-      fontSize: TYPE.uiLabel.fontSize,
-    }}
-  >
-    {label}
-  </div>
-);
-
-const PromoStack: React.FC<{ pills: ReturnType<typeof useReasons>["pills"]; sinkStart: number }> = ({
-  pills,
-  sinkStart,
-}) => {
+/** The search screen. The list drops on "tenggelam", with a scroll's follow-through. */
+const SearchPhone: React.FC<{ phone: { x: number; y: number }; sinkStart: number; until: number }> = ({ phone, sinkStart, until }) => {
   const frame = useCurrentFrame();
-  const sinkEnd = sinkStart + SINK_FRAMES;
-  if (frame >= sinkEnd) {
+  const { fps } = useVideoConfig();
+  if (frame >= until) {
     return null;
   }
-
+  const sink = spring({ frame: Math.max(0, frame - sinkStart), fps, config: S3_SINK_SPRING });
   return (
-    <>
-      {pills.map((pill) => {
-        if (frame < pill.start) {
-          return null;
-        }
-        const landed = pill.start + PILL_MOVE;
-        const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
-        const blur = interpolate(frame, [pill.start, landed], [24, 0], { ...clamp, easing: EASINGS.pop });
-        const sink = { ...clamp, easing: Easing.in(Easing.cubic) };
-        return (
-          <div
-            key={pill.id}
-            style={{
-              position: "absolute",
-              left: pill.x,
-              top: pill.y,
-              width: pill.width,
-              height: pill.height,
-              translate: `${Math.max(-PILL_MAX_OVERSHOOT, interpolate(frame, [pill.start, landed], [900, 0], { ...clamp, easing: EASINGS.pop }))}px ${interpolate(frame, [sinkStart, sinkEnd], [0, 1500], sink)}px`,
-              rotate: `${
-                interpolate(frame, [pill.start, landed], [pill.landing + 14, pill.landing], {
-                  ...clamp,
-                  easing: EASINGS.pop,
-                }) + interpolate(frame, [sinkStart, sinkEnd], [0, pill.sinkTurn], sink)
-              }deg`,
-              filter: blur > 0 ? `blur(${blur}px)` : undefined,
-            }}
-          >
-            <AssetSlot id={pill.id} fallback={<Pill label={pill.label} />} />
-          </div>
-        );
-      })}
-    </>
+    <div style={{ position: "absolute", left: phone.x, top: phone.y, width: S3_PHONE.width, height: S3_PHONE.height }}>
+      <div style={{ width: PHONE_OUTER.width, height: PHONE_OUTER.height, transform: `scale(${S3_PHONE_SCALE})`, transformOrigin: "0 0" }}>
+        <PhoneShell>
+          <SearchResults drop={sink * SEARCH_SINK} />
+        </PhoneShell>
+      </div>
+    </div>
   );
 };
 
@@ -430,20 +425,20 @@ export const Reasons: React.FC<{ reasons: ReturnType<typeof useReasons> }> = ({ 
         <Camera keyframes={reasons.keyframes}>
           <World>
             {/* S3 */}
-            <ExitText startFrame={TEXT_A_OUT}>
-              <WordBuild layout={reasons.textA} startFrame={TEXT_A_START} />
-            </ExitText>
-            <PromoStack pills={reasons.pills} sinkStart={reasons.sinkStart} />
-            <WordBuild layout={reasons.textB} startFrame={TEXT_B_START} />
+            <SearchPhone phone={reasons.phone} sinkStart={reasons.sinkStart} until={reasons.panUpEnd} />
+            <WordBuild layout={reasons.textA} startFrame={reasons.textAStart} gap={reasons.aGap} />
+            <WordBuild layout={reasons.textB} startFrame={reasons.textBStart} />
 
             {/* S4 */}
-            <WordBuild layout={reasons.s4Text} startFrame={S4_WORDS_START} />
             <RisingLine
               points={reasons.linePoints}
               bounds={reasons.lineBounds}
               startFrame={reasons.lineStart}
-              durationInFrames={LINE_FRAMES}
+              durationInFrames={reasons.lineFrames}
             />
+            <WordBuild layout={reasons.s4Text} startFrame={reasons.s4Start} gap={reasons.s4Gap} />
+            <LebayWord layout={reasons.naik} preset="punch" startFrame={reasons.naikStart} />
+            <WordBuild layout={reasons.terus} startFrame={reasons.terusStart} />
 
             {/* S5 */}
             <WordBuild layout={reasons.omzet} startFrame={reasons.omzetStart} />

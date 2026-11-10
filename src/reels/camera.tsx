@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { Camera as StoryCamera } from "../story/components/Camera";
 import { CAMERA_ZOOM, EASINGS, FOCAL, MOTION, REEL, SAFE_ZONE } from "./tokens";
-import { wordTiming } from "./WordBuild";
+import { wordTiming, type WordPace } from "./WordBuild";
 import type { Box, SentenceLayout } from "./wordLayout";
 
 /** `ease` shapes the segment arriving at this keyframe; easeCamera by default. */
@@ -98,7 +98,7 @@ export function sentenceCamera({
 }: {
   layout: SentenceLayout;
   startFrame: number;
-  gap?: number;
+  gap?: WordPace;
   /** Start the move out of the follow earlier than the default overlap. */
   pullStart?: number;
   /** End framing, when it should hold more than the sentence itself. */
@@ -186,7 +186,12 @@ export function sentenceCamera({
 
 /** Holds all scene content, in world coordinates. */
 export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <AbsoluteFill style={{ overflow: "visible" }}>{children}</AbsoluteFill>
+  <AbsoluteFill
+    style={{
+      overflow: "visible",
+      translate: "-22.6px 65.5px",
+    }}
+  >{children}</AbsoluteFill>
 );
 
 /**

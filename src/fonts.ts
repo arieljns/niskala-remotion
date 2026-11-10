@@ -9,6 +9,11 @@ import { loadFont } from "@remotion/google-fonts/Manrope";
  * actually painted — no system-font flash on render.
  */
 export const { fontFamily, waitUntilDone } = loadFont("normal", {
-  weights: ["500", "600", "700", "800"],
+  // The full weight set the Niskala design system uses (MASTER.md §2.3):
+  // 400/500 for body & captions, 600 the heading workhorse, 700 for
+  // secondary headings/labels, 800 reserved for the display-1 wordmark and
+  // proof-stat numbers only. 400 is loaded so unweighted body copy renders
+  // as real Manrope Regular, not a faux-thinned 500.
+  weights: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
 });

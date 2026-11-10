@@ -1,4 +1,4 @@
-import { interpolate, useCurrentFrame } from "remotion";
+import { Easing, interpolate, useCurrentFrame } from "remotion";
 import { COLORS, EASINGS, SHADOWS } from "./tokens";
 import type { SentenceLayout } from "./wordLayout";
 
@@ -17,6 +17,17 @@ export function punchScale(local: number): number {
   return interpolate(local, [9, PUNCH_FRAMES], [1.15, 1], CLAMP_BRAND);
 }
 
+/** Local frame a slam hits its target. */
+export const SLAM_LANDS = 8;
+
+/** Falls in from huge, accelerating, compresses on impact, rebounds, then keeps creeping so it never freezes. */
+export function slamScale(local: number): number {
+  if (local <= SLAM_LANDS) {
+    return interpolate(local, [0, SLAM_LANDS], [3.4, 0.94], { ...CLAMP, easing: Easing.in(Easing.cubic) });
+  }
+  return interpolate(local, [SLAM_LANDS, 10, 16, 32], [0.94, 1.07, 1, 1.03], CLAMP);
+}
+
 export function squashScale(local: number): { x: number; y: number } {
   const frames = [0, 8, 14, SQUASH_FRAMES];
   return {
@@ -28,19 +39,28 @@ export function squashScale(local: number): { x: number; y: number } {
 /** The big data word. Lebay comes from size, glow and motion, never from cropping. */
 export const LebayWord: React.FC<{
   layout: SentenceLayout;
-  preset: "punch" | "squash";
+  preset: "punch" | "squash" | "slam";
   startFrame: number;
-}> = ({ layout, preset, startFrame }) => {
+  /** Accent by default. Any other colour drops the red punch glow, which only suits the accent. */
+  color?: string;
+}> = ({ layout, preset, startFrame, color = COLORS.accent }) => {
   const frame = useCurrentFrame();
   if (frame < startFrame) {
     return null;
   }
   const local = frame - startFrame;
-  const scale = preset === "punch" ? { x: punchScale(local), y: punchScale(local) } : squashScale(local);
+  const scale =
+    preset === "slam"
+      ? { x: slamScale(local), y: slamScale(local) }
+      : preset === "punch"
+        ? { x: punchScale(local), y: punchScale(local) }
+        : squashScale(local);
   const blur =
-    preset === "punch"
-      ? interpolate(local, [0, PUNCH_FRAMES], [30, 0], CLAMP_BRAND)
-      : interpolate(local, [0, 8], [20, 0], CLAMP_BRAND);
+    preset === "slam"
+      ? interpolate(local, [0, SLAM_LANDS], [36, 0], CLAMP)
+      : preset === "punch"
+        ? interpolate(local, [0, PUNCH_FRAMES], [30, 0], CLAMP_BRAND)
+        : interpolate(local, [0, 8], [20, 0], CLAMP_BRAND);
   const { box, style, words } = layout;
 
   return (
@@ -53,7 +73,7 @@ export const LebayWord: React.FC<{
         height: box.height,
         scale: `${scale.x} ${scale.y}`,
         transformOrigin: "center",
-        opacity: interpolate(local, [0, 3], [0, 1], CLAMP),
+        opacity: preset === "slam" ? 1 : interpolate(local, [0, 3], [0, 1], CLAMP),
         filter: blur > 0 ? `blur(${blur}px)` : undefined,
       }}
     >
@@ -71,8 +91,8 @@ export const LebayWord: React.FC<{
             fontSize: style.fontSize,
             letterSpacing: style.letterSpacing,
             lineHeight: `${word.height}px`,
-            color: COLORS.accent,
-            textShadow: preset === "punch" ? SHADOWS.punchGlow : undefined,
+            color,
+            textShadow: preset !== "squash" && color === COLORS.accent ? SHADOWS.punchGlow : undefined,
           }}
         >
           {word.text}
