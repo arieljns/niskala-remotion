@@ -3,6 +3,8 @@ id: TODO-diisi-oleh-new-reel
 brief_status: draft        # draft | approved
 approved_by:
 approved_at:
+llm_reviewer:
+confidence:
 ---
 
 # Brief: <judul internal>
@@ -55,6 +57,23 @@ approved_at:
 - Hasil penilaian pewawancara (lolos / perlu diulang di tahap X):
 
 ## 9. Persetujuan
-- Nama: 
-- Ketik: APPROVE
+Dua-duanya wajib. Batas confidence ada di `config/brief-gate.json` (keseluruhan ≥ 80, tiap tahap ≥ 60).
+
+### Pembuat
+- Nama:
+- Ketik:
+- Tanggal:
+
+### Reviewer LLM
+- Model:
+- Confidence Tujuan:
+- Confidence Hook:
+- Confidence Storyline:
+- Confidence CTA:
+- Confidence Visual:
+- Confidence Produksi:
+- Confidence Teach-back:
+- Confidence keseluruhan:
+- Alasan skor:
+- Ketik:
 - Tanggal:

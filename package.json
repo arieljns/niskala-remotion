@@ -32,7 +32,14 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc && tsc -p scripts",
+    "new-reel": "node --no-warnings=ExperimentalWarning scripts/new-reel.ts",
+    "check-brief": "node --no-warnings=ExperimentalWarning scripts/check-brief.ts",
+    "approve-brief": "node --no-warnings=ExperimentalWarning scripts/approve-brief.ts",
+    "scaffold-script": "node --no-warnings=ExperimentalWarning scripts/scaffold-script.ts",
+    "build-timeline": "node --no-warnings=ExperimentalWarning scripts/build-timeline.ts",
+    "render": "node --no-warnings=ExperimentalWarning scripts/render.ts",
+    "verify-gate": "node --no-warnings=ExperimentalWarning scripts/verify-gate.ts"
   },
   "sideEffects": [
     "*.css"

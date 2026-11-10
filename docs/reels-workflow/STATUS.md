@@ -7,7 +7,7 @@ Update file ini setiap akhir fase. Agent berikutnya membaca ini untuk tahu posis
 | Fase | Isi | Status | Catatan |
 |---|---|---|---|
 | G | Grill gate: skill + template brief | `done` | `.claude/skills/grill-reel/SKILL.md`, `docs/templates/brief.md` |
-| G2 | Grill gate teknis: `new-reel.ts`, `check-brief.ts`, gate di build-timeline/render + 5 verifikasi | `todo` | Spesifikasi di `GRILL_GATE.md`; dibangun bareng Fase 3 |
+| G2 | Grill gate teknis: `new-reel`, `check-brief`, `approve-brief`, gate di scaffold-script/build-timeline/render | `done` | `npm run verify-gate` lolos 8/8. Isi build-timeline & render = Fase 3 |
 | 0 | Audit & rencana (berhenti, tunggu persetujuan) | `next` | Belum dimulai |
 | 1 | Tokens & fondasi | `todo` | |
 | 2 | Starter Asset Set | `todo` | |
@@ -24,6 +24,8 @@ Format: `YYYY-MM-DD: keputusan (siapa yang memutuskan)`
 
 - 2026-11-10: Brief workflow disimpan di `docs/reels-workflow/BRIEF.md` sebagai sumber kebenaran (pemilik).
 - 2026-11-10: Grill gate wajib untuk setiap reel: tidak ada script/kode/render tanpa `brief.md` approved (pemilik).
+- 2026-11-10: Yang berhak approve brief = pembuat reel sendiri + LLM pilihannya, LLM wajib memberi confidence score per tahap + keseluruhan sebelum reel masuk pipeline (pemilik).
+- 2026-11-10: Batas confidence awal = keseluruhan ≥ 80, tiap tahap ≥ 60, keseluruhan maks rata-rata tahap + 5 (`config/brief-gate.json`; usulan agent, menunggu konfirmasi pemilik).
 - 2026-11-10: Font reels = **Archivo untuk heading, Lexend untuk body**. Menggantikan aturan "Archivo saja" di brief awal (pemilik).
 - 2026-11-10: Repo dibersihkan, hanya kode & aset Reels yang disisakan. Explainer lama, NiskalaStory, ChunkOne, dan aset yang tidak dipakai reels dihapus; masih bisa diambil dari git history di commit `1c254ff` (pemilik).
 
@@ -31,7 +33,8 @@ Format: `YYYY-MM-DD: keputusan (siapa yang memutuskan)`
 
 - [ ] path log iterasi / format hipotesis (grill tahap 1)
 - [ ] path file penawaran/pricing untuk cek klaim (grill tahap 4)
-- [ ] siapa yang berhak approve brief (pembuat sendiri atau reviewer kedua)
+- [ ] konfirmasi batas confidence (usulan: keseluruhan ≥ 80, tiap tahap ≥ 60)
+- [ ] Reel01 belum punya brief: grill dulu, atau dikecualikan karena sudah jalan sebelum gate?
 
 - [ ] fps final (30/60) dan safe area px
 - [ ] nilai palet Senja jika belum lengkap di repo, plus 2 tema alternatif

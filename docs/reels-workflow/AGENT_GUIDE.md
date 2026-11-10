@@ -7,8 +7,8 @@ Tujuannya satu: **apa pun yang dikerjakan, hasilnya konsisten dengan standar yan
 
 Sebelum script, kode, aset, atau render untuk **reel tertentu**: jalankan wawancara `grill-reel`
 (`.claude/skills/grill-reel/SKILL.md`; agent non-Claude baca file itu dan ikuti persis) sampai `brief.md`
-di folder reel disetujui manusia dengan **nama + `APPROVE`**. Tanpa itu, jangan kerjakan apa pun untuk reel tersebut,
-walaupun user memintanya langsung. Detail: `GRILL_GATE.md`.
+di folder reel disetujui **pembuat (nama + `APPROVE`) dan LLM pilihannya (confidence score ≥ batas + `APPROVE`)**, lalu disegel `npm run approve-brief`. Tanpa itu, jangan kerjakan apa pun untuk reel tersebut,
+walaupun user memintanya langsung. Detail: `GRILL_GATE.md`, langkah-langkah: `docs/WORKFLOW.md`. Cek gate: `npm run check-brief -- <folder>`.
 
 ## 1. Urutan baca (wajib, sebelum menyentuh kode)
 
@@ -63,7 +63,7 @@ Perintah persisnya ditulis di `docs/README.md` setelah Fase 5 selesai. Sampai sa
 
 ## 5. Checklist sebelum menyerahkan pekerjaan
 
-- [ ] Kalau menyangkut reel tertentu: `brief.md`-nya sudah approved (nama + APPROVE) dan belum diubah sejak itu
+- [ ] Kalau menyangkut reel tertentu: `npm run check-brief -- <folder>` lolos
 - [ ] Hanya mengerjakan fase yang aktif di STATUS.md
 - [ ] Verifikasi fase sudah dijalankan dan lolos (sertakan output-nya)
 - [ ] Tidak ada hardcode teks/warna/angka di komponen

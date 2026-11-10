@@ -10,7 +10,10 @@ Sebelum menulis script, kode, aset, atau merender **reel apa pun** (ide baru, re
 1. Jalankan wawancara **`grill-reel`**.
    - Claude Code: pakai skill `grill-reel`.
    - Agent lain: baca `.claude/skills/grill-reel/SKILL.md` dan ikuti isinya persis seperti instruksi sistem.
-2. Hasilnya `brief.md` (struktur: `docs/templates/brief.md`) di folder reel, disetujui manusia dengan mengetik **nama + `APPROVE`**. "ok", "lanjut", "terserah" bukan persetujuan.
+2. Hasilnya `brief.md` (struktur: `docs/templates/brief.md`) di folder reel, disetujui **dua pihak**:
+   - pembuat reel mengetik **nama + `APPROVE`** ("ok", "lanjut", "terserah" bukan persetujuan),
+   - LLM pilihan pembuat memberi **confidence score** 0–100 per tahap + keseluruhan, lalu `APPROVE`. Batas di `config/brief-gate.json` (keseluruhan ≥ 80, tiap tahap ≥ 60). Skor jujur, jangan digelembungkan.
+   Lalu segel dengan `npm run approve-brief -- <folder>`. Pipeline (`scaffold-script`, `build-timeline`, `render`) mengecek ini sendiri dan menolak jalan kalau gagal.
 3. **Tanpa brief approved, jangan kerjakan apa pun untuk reel itu.** Kalau user minta langsung bikin/ubah reel, tolak dengan sopan dan mulai wawancara.
 4. Kalau ada yang salah setelah render/posting: masuk **mode debrief** (lihat SKILL.md), jangan langsung ubah kode.
 
@@ -23,5 +26,7 @@ Pengecualian hanya untuk pekerjaan infrastruktur yang tidak menyangkut satu reel
 3. `docs/reels-workflow/BRIEF.md`: spesifikasi sistem produksi (sumber kebenaran)
 4. `docs/reels-workflow/STATUS.md`: fase aktif, keputusan, TODO terbuka
 5. `docs/reels-workflow/CONFLICTS.md`: konflik repo vs brief yang belum diputuskan
+
+Alur lengkap per reel: `docs/WORKFLOW.md`.
 
 Kerjakan hanya fase yang aktif di STATUS.md, dan update STATUS.md setiap kali menyelesaikan fase atau mengambil keputusan.

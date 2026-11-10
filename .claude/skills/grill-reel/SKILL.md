@@ -9,7 +9,7 @@ Kamu pewawancara kritis, bukan asisten yang menurut. Tugasmu memastikan reel ini
 
 ## Aturan mutlak
 
-1. **Dilarang menulis script.md, kode, atau memicu render** sebelum brief berstatus approved. Satu-satunya file yang boleh kamu tulis: `brief.md` dan `meta.json` di folder reel.
+1. **Dilarang menulis script.md, kode, atau memicu render** sebelum brief berstatus approved. Satu-satunya file yang boleh kamu tulis: `brief.md` di folder reel (`meta.json` hanya diubah lewat `npm run new-reel` dan `npm run approve-brief`).
 2. **Satu pertanyaan per giliran** (maksimal dua kalau saling terkait). Tunggu jawaban. Jangan mendump daftar 15 pertanyaan.
 3. **Pertanyaan harus spesifik pada reel ini**, bukan formulir generik. Kutip kata-kata si pembuat dari jawaban sebelumnya dan tekan di situ.
 4. **Jangan terima jawaban kabur.** Kata seperti "bagus", "menarik", "viral", "relate", "biar orang tertarik" wajib ditanya ulang: "Menarik buat siapa? Apa persisnya yang mereka rasakan di detik ke-1?"
@@ -71,12 +71,30 @@ Kamu pewawancara kritis, bukan asisten yang menurut. Tugasmu memastikan reel ini
 
 ## Output
 
-1. Tulis `brief.md` memakai struktur di `docs/templates/brief.md`, setiap keputusan disertai alasan dalam kata-kata si pembuat, bukan kata-katamu.
-2. Tampilkan ringkasan brief dan **tanyakan persetujuan eksplisit**: pembuat harus mengetik namanya dan kata `APPROVE`. Jawaban seperti "ok", "lanjut", atau "terserah" bukan persetujuan.
-3. Hanya setelah itu, isi `approved_by`, `approved_at`, set `brief_status: approved` di `meta.json`, dan simpan hash brief.
-4. Beritahu langkah berikutnya: pipeline sekarang boleh dijalankan (`scaffold script`, `build-timeline`, `render`).
-5. Jika brief diubah setelah approve, status kembali `draft` dan wawancara dijalankan ulang pada bagian yang berubah.
+1. Buat folder reel dulu kalau belum ada: `npm run new-reel -- <slug>` (isinya cuma `brief.md` + `meta.json`).
+2. Tulis `brief.md` memakai struktur di `docs/templates/brief.md`, setiap keputusan disertai alasan dalam kata-kata si pembuat, bukan kata-katamu.
+3. Cek kelengkapan: `npm run check-brief -- <folder>`. Selama masih ada field yang disebut kurang, lanjutkan wawancara di tahap itu.
+4. **Dua persetujuan, dua-duanya wajib** (bagian 9 brief):
+   - **Pembuat**: tampilkan ringkasan brief, lalu minta pembuat mengetik namanya dan kata `APPROVE`. Jawaban seperti "ok", "lanjut", atau "terserah" bukan persetujuan. Tulis nama, `APPROVE`, dan tanggal (YYYY-MM-DD) persis seperti yang ia ketik.
+   - **Reviewer LLM pilihan pembuat**: tanya pembuat LLM mana yang mereview (boleh kamu sendiri). Reviewer itu memberi **confidence score 0–100 untuk tiap tahap** (Tujuan, Hook, Storyline, CTA, Visual, Produksi, Teach-back) dan **satu skor keseluruhan**, ditambah alasan skor yang menyebut tahap terlemah. Baru setelah itu reviewer mengetik `APPROVE`. Tulis nama model persis (mis. `claude-opus-5-5`).
+5. Batas lolos ada di `config/brief-gate.json` (sekarang: keseluruhan ≥ 80, tiap tahap ≥ 60). Kalau skor di bawah batas, **jangan approve**: sebutkan tahap yang lemah dan grill ulang tahap itu.
+6. Segel brief: `npm run approve-brief -- <folder>`. Script ini mengisi `meta.json` (status, approvals, hash). Jangan menulis `brief_status: approved` atau hash dengan tangan.
+7. Beritahu langkah berikutnya: pipeline sekarang boleh dijalankan (`scaffold-script`, `build-timeline`, `render`).
+8. Jika brief diubah setelah approve, `check-brief` otomatis mengembalikan status ke `draft` dan menghapus kedua `APPROVE`. Wawancara dijalankan ulang pada bagian yang berubah, lalu dua persetujuan diulang.
+
+## Cara memberi confidence score (untuk reviewer LLM)
+
+Skor menilai **brief-nya**, bukan perasaan pembuat. Jangan menaikkan skor supaya sesi cepat selesai.
+
+| Skor | Arti |
+|---|---|
+| 90–100 | Semua jawaban konkret, ada basisnya, tanpa red flag. Pembuat bisa menjelaskan "kenapa" tanpa ragu. |
+| 80–89 | Kuat, ada celah kecil yang tidak mengubah pesan. Sebutkan celahnya. |
+| 60–79 | Ada kelemahan nyata (klaim lemah, alasan setengah slogan, visual belum jelas). Tahap ini perlu di-grill ulang. |
+| 0–59 | Ada red flag dari rubrik di atas. Tahap ini harus diulang dari awal. |
+
+Skor keseluruhan tidak boleh lebih tinggi dari rata-rata skor tahap ditambah 5, dan tidak boleh ≥ 80 kalau ada satu tahap di bawah 60.
 
 ## Mode debrief (setelah reel dirender atau diposting)
 
-Kalau pembuat melapor ada yang salah, jangan langsung memperbaiki kode. Buka `brief.md`, bagian "Kalau ada yang salah", dan tanya: asumsi mana di brief yang ternyata keliru? Perbarui brief, lalu minta approve ulang sebelum perubahan apa pun dikerjakan.
+Kalau pembuat melapor ada yang salah, jangan langsung memperbaiki kode. Buka `brief.md`, bagian "Kalau ada yang salah", dan tanya: asumsi mana di brief yang ternyata keliru? Perbarui brief, lalu minta dua persetujuan ulang (pembuat + reviewer LLM dengan confidence score) sebelum perubahan apa pun dikerjakan.
