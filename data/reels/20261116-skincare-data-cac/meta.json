@@ -1,0 +1,27 @@
+{
+  "id": "20261116-skincare-data-cac",
+  "slug": "skincare-data-cac",
+  "created_at": "2026-11-16T16:38:48.766Z",
+  "brief_status": "approved",
+  "brief_hash": "ea2d631b78143e5c3aa58e466f254cc5f8cfb2c8e39deb782b896b8a5d90ab49",
+  "approvals": {
+    "creator": {
+      "name": "ariel",
+      "date": "2026-11-16"
+    },
+    "llm": {
+      "model": "gemini-3.8-flash",
+      "date": "2026-11-16",
+      "overall_confidence": 79,
+      "stage_confidence": {
+        "Tujuan": 85,
+        "Hook": 80,
+        "Storyline": 82,
+        "CTA": 80,
+        "Visual": 75,
+        "Produksi": 75,
+        "Teach-back": 78
+      }
+    }
+  }
+}
