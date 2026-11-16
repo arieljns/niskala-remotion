@@ -10,3 +10,5 @@ import { Config } from "@remotion/cli/config";
 Config.setRspack(true);
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
+// Reel03 renders real 3D (three.js); headless Chrome needs a software GL backend.
+Config.setChromiumOpenGlRenderer("angle");

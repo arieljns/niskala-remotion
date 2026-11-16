@@ -189,7 +189,7 @@ export const World: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   <AbsoluteFill
     style={{
       overflow: "visible",
-      translate: "-22.6px 65.5px",
+      translate: "-6.4px 9.1px",
     }}
   >{children}</AbsoluteFill>
 );

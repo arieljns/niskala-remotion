@@ -1,0 +1,27 @@
+{
+  "id": "20261115-morajaya-showcase",
+  "slug": "morajaya-showcase",
+  "created_at": "2026-11-15T10:11:13.005Z",
+  "brief_status": "approved",
+  "brief_hash": "eb44c8b0b57b6c6bf8e343ada9b8231401408dcbb6a2c0d78b50c5b99d048551",
+  "approvals": {
+    "creator": {
+      "name": "Ariel",
+      "date": "2026-11-15"
+    },
+    "llm": {
+      "model": "claude-sonnet-5-5",
+      "date": "2026-11-15",
+      "overall_confidence": 62,
+      "stage_confidence": {
+        "Tujuan": 75,
+        "Hook": 60,
+        "Storyline": 65,
+        "CTA": 62,
+        "Visual": 58,
+        "Produksi": 65,
+        "Teach-back": 65
+      }
+    }
+  }
+}

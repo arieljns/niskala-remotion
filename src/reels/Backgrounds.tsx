@@ -20,7 +20,7 @@ export const MistBackground: React.FC<{ frameOffset?: number }> = ({ frameOffset
   const frame = useCurrentFrame() + frameOffset;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.mist, overflow: "hidden" }}>
+    <AbsoluteFill style={{ backgroundColor: COLORS.mist, overflow: "hidden" }} from={-35}>
       {BLOBS.map((blob) => {
         const angle = (frame / DRIFT_PERIOD_FRAMES) * Math.PI * 2 + blob.phase;
         const width = REEL.width * blob.size;
