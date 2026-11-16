@@ -43,6 +43,12 @@ confidence:
 - Momen exaggerated + cara mencegah teks terpotong:
 - Aset baru dibutuhkan? (ya/tidak + alasan):
 
+## 5a. Angka yang boleh muncul di layar
+Setiap angka di copy reel harus ada di sini (kolom pertama), dengan sumber atau kata "Contoh" (angka ilustrasi). Angka yang tidak ada di tabel ini ditolak `NUMBER_NOT_IN_BRIEF`. Tidak ada angka? Tulis "tidak ada" di baris pertama.
+| Angka | Sumber atau "Contoh" |
+|-------|----------------------|
+|       |                      |
+
 ## 6. Produksi
 - Pengisi VO:
 - Target durasi:

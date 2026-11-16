@@ -8,7 +8,7 @@ import { COLORS, EASINGS, TYPE } from "../tokens";
 import { WordBuild } from "../WordBuild";
 import { layoutSentence } from "../wordLayout";
 import { timedCheck, type TimedCheck } from "./timedCheck";
-import { WORD_TIMES } from "./copy";
+import type { Reel01Copy } from "./copy";
 import { CAMERA_SETTLE, fitToHold, PHRASE_HANDOVER, voiceStarts, type SceneTiming } from "./timeline";
 
 /** S7. The dot under the sentence is where S7b's phone grows from. */
@@ -19,23 +19,23 @@ const DOT_FRAMES = 10;
 const DOT_BEFORE_VO_END = 8;
 const HANDOVER = 14;
 
-export function useSolution(scene: SceneTiming) {
+export function useSolution(scene: SceneTiming, copy: Reel01Copy["solution"]) {
   return useMemo(() => {
     const textA = layoutSentence({
-      lines: ["~~Tapi bukan berarti~~", "~~kamu harus~~ __tutup toko.__"],
+      lines: copy.first,
       style: TYPE.sentence,
       center: { x: AT.x, y: AT.y - 140 },
     });
     const textB = layoutSentence({
-      lines: ["~~Cukup buka~~", "**jalur jualan**", "__sendiri.__"],
+      lines: copy.second,
       style: TYPE.sentence,
       center: { x: AT.x, y: AT.y - 190 },
     });
 
-    const bGap = fitToHold(voiceStarts(scene, WORD_TIMES.s7Buka), scene.durationInFrames, CAMERA_SETTLE);
+    const bGap = fitToHold(voiceStarts(scene, copy.times.second), scene.durationInFrames, CAMERA_SETTLE);
     const bStart = bGap[0];
     const aOut = bStart - PHRASE_HANDOVER;
-    const aGap = fitToHold(voiceStarts(scene, WORD_TIMES.s7Bukan), aOut, CAMERA_SETTLE);
+    const aGap = fitToHold(voiceStarts(scene, copy.times.first), aOut, CAMERA_SETTLE);
     const aStart = aGap[0];
     const dotPop = scene.voEnd - DOT_BEFORE_VO_END;
 
@@ -86,7 +86,7 @@ export function useSolution(scene: SceneTiming) {
     ];
 
     return { textA, textB, aStart, aOut, aGap, bStart, bGap, dotPop, keyframes, sentenceChecks, boxChecks };
-  }, [scene]);
+  }, [copy, scene]);
 }
 
 export const Solution: React.FC<{ solution: ReturnType<typeof useSolution> }> = ({ solution }) => {

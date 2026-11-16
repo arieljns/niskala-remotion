@@ -6,24 +6,34 @@ import { useReelFonts } from "../useReelFonts";
 import { Numpang, useNumpang } from "./Numpang";
 import { MusicTrack, SfxTrack, VoTrack, type SfxCue } from "./audio";
 import { BlackBeat, useBlackBeat } from "./BlackBeat";
-import { BLACK_BEATS } from "./copy";
+import { buildCopy } from "./copy";
+import type { ReelSpec } from "../contract/spec.schema";
+import type { ReelTiming } from "../contract/timing-types";
+import reel01Timing from "../specs/_golden/reel01.timing.json";
+import { spec as reel01Spec } from "../specs/_golden/reel01";
 import { Cta, useCta } from "./Cta";
 import { PhoneFlow, usePhoneFlow } from "./PhoneFlow";
 import { Reasons, useReasons } from "./Reasons";
 import { S1Hook, useS1Hook } from "./S1Hook";
 import { Solution, useSolution } from "./Solution";
+import { MOTION_REPORT_MARKER } from "../contract/motion-types";
+import { buildMotionReport } from "./motionReport";
 import { reportTiming } from "./timedCheck";
-import { buildTimeline, type HookVariant, type ReelTimeline } from "./timeline";
+import { buildTimeline, type ReelTimeline } from "./timeline";
 
 export type Reel01Props = {
-  hookVariant: HookVariant;
+  /** All on-screen copy and the hook variant. Style, motion and screens are the kit's, from Reel01. */
+  spec: ReelSpec;
+  /** Voice-over files, cues and word times (<id>.timing.json). Written by reel:cues, never typed. */
+  timing: ReelTiming;
   debugSafeZone: boolean;
   /** Filled in by calculateReel01Metadata from the real VO files. */
   timeline: ReelTimeline | null;
 };
 
 export const REEL01_DEFAULT_PROPS: Reel01Props = {
-  hookVariant: "stop",
+  spec: reel01Spec,
+  timing: reel01Timing as ReelTiming,
   debugSafeZone: false,
   timeline: null,
 };
@@ -37,17 +47,19 @@ export const Reel01: React.FC<Reel01Props> = (props) => {
   return fontsReady ? <Reel01Scenes {...props} /> : null;
 };
 
-const Reel01Scenes: React.FC<Reel01Props> = ({ hookVariant, debugSafeZone, timeline: timelineProp }) => {
-  const timeline = useMemo(() => timelineProp ?? buildTimeline(hookVariant), [hookVariant, timelineProp]);
+const Reel01Scenes: React.FC<Reel01Props> = ({ spec, timing, debugSafeZone, timeline: timelineProp }) => {
+  const hookVariant = spec.hookVariant;
+  const copy = useMemo(() => buildCopy(spec, timing), [spec, timing]);
+  const timeline = useMemo(() => timelineProp ?? buildTimeline(hookVariant, timing), [hookVariant, timing, timelineProp]);
   const { scenes } = timeline;
 
-  const hook = useS1Hook(hookVariant, scenes.s1);
-  const s2 = useNumpang(scenes.s2);
-  const reasons = useReasons({ s3: scenes.s3, s4: scenes.s4, s5: scenes.s5 });
-  const s6 = useBlackBeat({ id: "S6 black beat", phrases: BLACK_BEATS.s6, scene: scenes.s6 });
-  const solution = useSolution(scenes.s7);
-  const flow = usePhoneFlow(scenes, solution.keyframes, solution.textB);
-  const cta = useCta(scenes.s10);
+  const hook = useS1Hook(hookVariant, scenes.s1, copy.hook);
+  const s2 = useNumpang(scenes.s2, copy.numpang);
+  const reasons = useReasons({ s3: scenes.s3, s4: scenes.s4, s5: scenes.s5, copy });
+  const s6 = useBlackBeat({ id: "S6 black beat", phrases: copy.blackBeats.s6, scene: scenes.s6 });
+  const solution = useSolution(scenes.s7, copy.solution);
+  const flow = usePhoneFlow(scenes, solution.keyframes, solution.textB, copy.lines);
+  const cta = useCta(scenes.s10, copy.lines.s10);
 
   const sentenceChecks = useMemo(
     () => [
@@ -81,6 +93,10 @@ const Reel01Scenes: React.FC<Reel01Props> = ({ hookVariant, debugSafeZone, timel
   );
 
   useEffect(() => {
+    // Machine-readable report for scripts/lib/motion-probe.ts (reel:check). Only in debug renders.
+    if (debugSafeZone) {
+      console.log(`${MOTION_REPORT_MARKER} ${JSON.stringify(buildMotionReport(sentenceChecks, boxChecks))}`);
+    }
     if (debugSafeZone || getRemotionEnvironment().isStudio) {
       console.log(
         `[timing] total ${timeline.totalFrames} f = ${(timeline.totalFrames / 30).toFixed(2)} s; ${timeline.order

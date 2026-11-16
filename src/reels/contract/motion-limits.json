@@ -1,0 +1,10 @@
+{
+  "_derivedFrom": "Reel01 golden spec, measured in Chromium (debug render)",
+  "minHoldFrames": 15,
+  "holdExceptions": {
+    "s8a": 12,
+    "s8b": 7,
+    "s8c": 13
+  },
+  "maxConcurrentEntrances": 4
+}

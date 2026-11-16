@@ -38,6 +38,7 @@ Kamu pewawancara kritis, bukan asisten yang menurut. Tugasmu memastikan reel ini
 - Loncatan logika: di mana seller bisa bilang "ah, nggak juga"? Jawab keberatan itu sebelum mereka mengucapkannya.
 - Apakah solusinya (website/Niskala) benar-benar mengikuti dari alasan-alasan tadi, atau ditempel?
 - Reel ini memicu, bukan mengajar tuntas. Informasi apa yang sengaja ditahan, dan kenapa?
+- **Angka di layar.** Angka apa saja yang akan muncul di copy (persen, harga, jumlah, tahun)? Tiap angka: dari mana sumbernya, atau tandai "Contoh" kalau ilustrasi. Semuanya masuk tabel "5a. Angka yang boleh muncul di layar" di brief; angka yang tidak ada di tabel ditolak pemeriksa (`NUMBER_NOT_IN_BRIEF`). Tidak ada angka? Tulis "tidak ada".
 
 **Tahap 4 — CTA & kesesuaian penawaran**
 - CTA satu aksi saja. Apa persisnya, dan apakah seller yang baru kenal kita akan benar-benar melakukannya?
@@ -79,7 +80,7 @@ Kamu pewawancara kritis, bukan asisten yang menurut. Tugasmu memastikan reel ini
    - **Reviewer LLM pilihan pembuat**: tanya pembuat LLM mana yang mereview (boleh kamu sendiri). Reviewer itu memberi **confidence score 0–100 untuk tiap tahap** (Tujuan, Hook, Storyline, CTA, Visual, Produksi, Teach-back) dan **satu skor keseluruhan**, ditambah alasan skor yang menyebut tahap terlemah. Baru setelah itu reviewer mengetik `APPROVE`. Tulis nama model persis (mis. `claude-opus-5-5`).
 5. Batas lolos ada di `config/brief-gate.json` (sementara rendah: keseluruhan ≥ 50, tiap tahap ≥ 30; selalu baca file itu, angkanya bisa naik). Kalau skor di bawah batas, **jangan approve**: sebutkan tahap yang lemah dan grill ulang tahap itu.
 6. Segel brief: `npm run approve-brief -- <folder>`. Script ini mengisi `meta.json` (status, approvals, hash). Jangan menulis `brief_status: approved` atau hash dengan tangan.
-7. Beritahu langkah berikutnya: pipeline sekarang boleh dijalankan (`scaffold-script`, `build-timeline`, `render`).
+7. Beritahu langkah berikutnya: pipeline deterministik di `docs/reels-workflow/AGENT_GUIDE.md` (bagian "Alur per reel"): isi spec copy saja, `reel:check`, rekam VO, `reel:vo-prep`, `reel:cues` (manusia konfirmasi), `reel:stills`, `reel:approve` (manusia), `reel:render`. Spec hanya berisi copy; gaya, gerak, UI, dan aset dikunci ke Reel01.
 8. Jika brief diubah setelah approve, `check-brief` otomatis mengembalikan status ke `draft` dan menghapus kedua `APPROVE`. Wawancara dijalankan ulang pada bagian yang berubah, lalu dua persetujuan diulang.
 
 ## Cara memberi confidence score (untuk reviewer LLM)

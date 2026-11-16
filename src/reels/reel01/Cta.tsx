@@ -5,7 +5,7 @@ import { MistBackground, NightBackground } from "../Backgrounds";
 import { COLORS, FOCAL, SHADOWS } from "../tokens";
 import { IKUTI_BOX, PROFILE_CARD, ProfileHeaderCard, SafariUrlBar } from "../ui/ios/Floating";
 import { pressAmount, SHEET_SPRING } from "../ui/ios/tokens";
-import { LINES } from "./copy";
+import type { Reel01Copy } from "./copy";
 import { buildHeadlines, Headline } from "./Headlines";
 import type { SceneTiming } from "./timeline";
 
@@ -17,10 +17,10 @@ const URL_BAR_WIDTH = 340;
 const TAP_SECONDS = 3.2;
 const FOLLOW_FRAMES = 8;
 
-export function useCta(scene: SceneTiming) {
+export function useCta(scene: SceneTiming, copy: Reel01Copy["lines"]["s10"]) {
   return useMemo(() => {
     const headlines = buildHeadlines(
-      LINES.s10.map((line, index) => ({
+      copy.map((line, index) => ({
         scene,
         offset: 0,
         lines: line.lines,
@@ -36,7 +36,7 @@ export function useCta(scene: SceneTiming) {
       urlIn: scene.cues[2],
       checks: headlines.map((line) => line.check),
     };
-  }, [scene]);
+  }, [copy, scene]);
 }
 
 /** S10: Night, then a hard cut to Mist with the follow card and the URL. */

@@ -1,0 +1,6 @@
+{
+  "_status": "TODO_DIFF_THRESHOLD, MEASURED not guessed (2026-11-16). Render noise on this machine, worst case over every variant seen: PSNR 50.78 dB, 0.047% of pixels above 16 levels, 0.038% above 32, max single-channel difference 53. Changing one word ('jualan' to 'bikin'): PSNR 29.96 dB, 0.20% above 32, max 225. The limits sit between the two. A very small real change (one comma) can still fall inside the tolerance; for exact checks use the hash.",
+  "psnrMin": 45,
+  "over32Max": 0.001,
+  "maxLevel": 80
+}

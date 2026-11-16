@@ -21,7 +21,7 @@ import { PHONE, PHONE_OUTER, PUSH_FRAMES, SHEET_SPRING, pressAmount, pushProgres
 import { WordBuild } from "../WordBuild";
 import { unionBox, type Box, type SentenceLayout } from "../wordLayout";
 import { buildHeadlines, Headline, type HeadlineSpec } from "./Headlines";
-import { LINES } from "./copy";
+import type { Reel01Copy } from "./copy";
 import { AT, DOT_SIZE } from "./Solution";
 import type { ReelTimeline } from "./timeline";
 
@@ -68,7 +68,12 @@ type FlowScenes = Pick<ReelTimeline["scenes"], "s7" | "s7b" | "s8a" | "s8b" | "s
 const DARK_TAP = COLORS.ink;
 const LIGHT_TAP = COLORS.cream;
 
-export function usePhoneFlow(scenes: FlowScenes, s7Keyframes: readonly CameraKeyframe[], s7Sentence: SentenceLayout) {
+export function usePhoneFlow(
+  scenes: FlowScenes,
+  s7Keyframes: readonly CameraKeyframe[],
+  s7Sentence: SentenceLayout,
+  lines: Reel01Copy["lines"],
+) {
   return useMemo(() => {
     const { s7, s7b, s8a, s8b, s8c, s8d, s9 } = scenes;
     /* Scene starts, in this Sequence's frames. */
@@ -133,12 +138,12 @@ export function usePhoneFlow(scenes: FlowScenes, s7Keyframes: readonly CameraKey
     keyframes.push({ ...s9End, frame: durationInFrames, ease: "linear" });
 
     const specs: HeadlineSpec[] = [
-      ...LINES.s7b.map((line) => ({ scene: s7b, offset: 0, lines: line.lines, at: line.at })),
-      ...LINES.s8a.map((line) => ({ scene: s8a, offset: a, lines: line.lines, at: line.at })),
-      ...LINES.s8b.map((line) => ({ scene: s8b, offset: b, lines: line.lines, at: line.at })),
-      ...LINES.s8c.map((line) => ({ scene: s8c, offset: c, lines: line.lines, at: line.at })),
-      ...LINES.s8d.map((line) => ({ scene: s8d, offset: d, lines: line.lines, at: line.at })),
-      ...LINES.s9.map((line) => ({ scene: s9, offset: e, lines: line.lines, at: line.at })),
+      ...lines.s7b.map((line) => ({ scene: s7b, offset: 0, lines: line.lines, at: line.at })),
+      ...lines.s8a.map((line) => ({ scene: s8a, offset: a, lines: line.lines, at: line.at })),
+      ...lines.s8b.map((line) => ({ scene: s8b, offset: b, lines: line.lines, at: line.at })),
+      ...lines.s8c.map((line) => ({ scene: s8c, offset: c, lines: line.lines, at: line.at })),
+      ...lines.s8d.map((line) => ({ scene: s8d, offset: d, lines: line.lines, at: line.at })),
+      ...lines.s9.map((line) => ({ scene: s9, offset: e, lines: line.lines, at: line.at })),
     ];
     const headlines = buildHeadlines(specs);
 
@@ -190,7 +195,7 @@ export function usePhoneFlow(scenes: FlowScenes, s7Keyframes: readonly CameraKey
       pillSfx: s7b.from + t.pillPop,
       notificationSfx: s7b.from + t.notification,
     };
-  }, [s7Keyframes, s7Sentence, scenes]);
+  }, [lines, s7Keyframes, s7Sentence, scenes]);
 }
 
 export type PhoneFlowData = ReturnType<typeof usePhoneFlow>;

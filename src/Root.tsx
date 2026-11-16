@@ -6,7 +6,10 @@ import { calculateReel01Metadata } from "./reels/reel01/audio";
 import { ReferenceCompare } from "./reels/reel01/dev/ReferenceCompare";
 import { UiKitShowcase } from "./reels/reel01/dev/UiKitShowcase";
 import { Reel01, REEL01_DEFAULT_PROPS } from "./reels/reel01/Reel01";
+import { Reel02, REEL02_DEFAULT_PROPS, REEL02_FRAMES } from "./reels/reel02/Reel02";
+import { Reel03, REEL03_DEFAULT_PROPS, REEL03_FRAMES } from "./reels/reel03/Reel03";
 import { buildTimeline } from "./reels/reel01/timeline";
+import { FitProbe, calculateFitMetadata } from "./reels/reel01/FitProbe";
 import { REEL } from "./reels/tokens";
 
 /**
@@ -32,7 +35,36 @@ export const RemotionRoot: React.FC = () => {
         component={Reel01}
         defaultProps={REEL01_DEFAULT_PROPS}
         calculateMetadata={calculateReel01Metadata}
-        durationInFrames={buildTimeline(REEL01_DEFAULT_PROPS.hookVariant).totalFrames}
+        durationInFrames={buildTimeline(REEL01_DEFAULT_PROPS.spec.hookVariant, REEL01_DEFAULT_PROPS.timing).totalFrames}
+        fps={REEL.fps}
+        width={REEL.width}
+        height={REEL.height}
+      />
+      <Composition
+        id="Reel02"
+        component={Reel02}
+        defaultProps={REEL02_DEFAULT_PROPS}
+        durationInFrames={REEL02_FRAMES}
+        fps={REEL.fps}
+        width={REEL.width}
+        height={REEL.height}
+      />
+      <Composition
+        id="Reel03"
+        component={Reel03}
+        defaultProps={REEL03_DEFAULT_PROPS}
+        durationInFrames={REEL03_FRAMES}
+        fps={REEL.fps}
+        width={REEL.width}
+        height={REEL.height}
+      />
+      {/* Measurement only: scripts/lib/fit-probe.ts reads its metadata, nothing is rendered. */}
+      <Composition
+        id="FitProbe"
+        component={FitProbe}
+        defaultProps={{ spec: REEL01_DEFAULT_PROPS.spec, timing: REEL01_DEFAULT_PROPS.timing, fit: [] }}
+        calculateMetadata={calculateFitMetadata}
+        durationInFrames={1}
         fps={REEL.fps}
         width={REEL.width}
         height={REEL.height}

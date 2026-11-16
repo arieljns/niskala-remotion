@@ -10,6 +10,21 @@ Sebelum script, kode, aset, atau render untuk **reel tertentu**: jalankan wawanc
 di folder reel disetujui **pembuat (nama + `APPROVE`) dan LLM pilihannya (confidence score ≥ batas + `APPROVE`)**, lalu disegel `npm run approve-brief`. Tanpa itu, jangan kerjakan apa pun untuk reel tersebut,
 walaupun user memintanya langsung. Pengecualian satu-satunya: Reel01 (sudah ada sebelum gate). Detail: `GRILL_GATE.md`, langkah-langkah: `docs/WORKFLOW.md`. Cek gate: `npm run check-brief -- <folder>`.
 
+## 0b. Alur per reel (workflow deterministik)
+
+Spec hanya berisi copy; gaya, gerak, UI, dan aset dikunci ke Reel01 (`AGENTS.md`, aturan nomor 1). Urutan, dan status bisa dilihat
+dengan `npm run reel:status -- <id>`:
+
+1. `npm run reel:grill -- <id>`: wawancara `grill-reel`, brief approved dan disegel. Isi tabel "5a. Angka yang boleh muncul di layar".
+2. Isi `src/reels/specs/<id>.ts` (copy saja). Bentuk dan batas: `src/reels/contract/spec.schema.ts`; contoh: `specs/_golden/`.
+3. Rekam VO per scene di `public/reels/<id>/vo-raw/`, lalu `npm run reel:vo-prep -- <id>`.
+4. `npm run reel:cues -- <id>` menyarankan timing; **manusia** mendengarkan dan menjalankan `reel:cues -- <id> --confirm`.
+5. `npm run reel:check -- <id>` sampai hijau. Kode galat: `npm run reel:check -- --explain <KODE>`. Perbaiki copy, bukan pemeriksanya.
+6. `npm run reel:stills -- <id>`: manusia melihat `out/<id>/contact.png`, lalu **manusia** menjalankan `npm run reel:approve -- <id>`.
+7. `npm run reel:render -- <id>`: satu-satunya render resmi, hasil di `out/<id>/<id>.mp4` (wajib < 60 detik).
+
+Penjaga lokal dan batasnya: `docs/ENFORCEMENT.md`.
+
 ## 1. Urutan baca (wajib, sebelum menyentuh kode)
 
 1. `docs/reels-workflow/AGENT_GUIDE.md`: file ini (cara kerja + aturan ringkas).

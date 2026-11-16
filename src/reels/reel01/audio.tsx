@@ -3,7 +3,7 @@ import { ALL_FORMATS, Input, UrlSource } from "mediabunny";
 import { getStaticFiles, Sequence, staticFile, type CalculateMetadataFunction } from "remotion";
 import { REEL } from "../tokens";
 import type { Reel01Props } from "./Reel01";
-import { buildTimeline, musicVolume, specsFor, VO_DIR, type ReelTimeline, type SceneId } from "./timeline";
+import { buildTimeline, musicVolume, specsFor, type ReelTimeline, type SceneId } from "./timeline";
 
 const AUDIO_DIR = "reels/reel01/audio";
 const AUDIO_EXTENSIONS = ["wav", "mp3", "m4a"] as const;
@@ -28,12 +28,12 @@ async function fileSeconds(path: string): Promise<number> {
 
 /** Reads every VO file's real length; the reel's length and all its scene frames follow from that. */
 export const calculateReel01Metadata: CalculateMetadataFunction<Reel01Props> = async ({ props }) => {
-  const specs = specsFor(props.hookVariant);
+  const specs = specsFor(props.spec.hookVariant, props.timing);
   const entries = await Promise.all(
     specs
-      .filter((item) => hasStaticFile(`${VO_DIR}/${item.file}`))
+      .filter((item) => hasStaticFile(`${props.timing.voDir}/${item.file}`))
       .map(async (item) => {
-        const measured = await fileSeconds(`${VO_DIR}/${item.file}`);
+        const measured = await fileSeconds(`${props.timing.voDir}/${item.file}`);
         if (Math.abs(measured - item.expectedSeconds) > DURATION_WARN_SECONDS) {
           console.warn(`[vo] ${item.file} is ${measured.toFixed(2)} s, expected about ${item.expectedSeconds} s`);
         }
@@ -41,7 +41,7 @@ export const calculateReel01Metadata: CalculateMetadataFunction<Reel01Props> = a
       }),
   );
   const seconds: Partial<Record<SceneId, number>> = Object.fromEntries(entries);
-  const timeline = buildTimeline(props.hookVariant, seconds);
+  const timeline = buildTimeline(props.spec.hookVariant, props.timing, seconds);
   const missing = specs.filter((item) => seconds[item.id] === undefined).map((item) => item.file);
   if (missing.length > 0) {
     console.warn(`[vo] SILENT: using expected durations for ${missing.length} missing file(s): ${missing.join(", ")}`);
@@ -62,7 +62,7 @@ export const VoTrack: React.FC<{ timeline: ReelTimeline }> = ({ timeline }) => (
           durationInFrames={scene.voFrames}
           layout="none"
         >
-          <Audio src={staticFile(`${VO_DIR}/${scene.file}`)} />
+          <Audio src={staticFile(`${timeline.voDir}/${scene.file}`)} />
         </Sequence>
       );
     })}

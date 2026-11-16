@@ -1,0 +1,41 @@
+{
+  "_note": "Single source of truth for what a reel-making agent must not edit. Longest matching prefix wins: a path under 'protect' is protected unless a longer prefix in 'except' covers it. Enforced by npm run guard:lock (OS read-only) and the PreToolUse hook scripts/guard-hook.ts. Changing this file needs guard:unlock.",
+  "protect": [
+    "src/reels/",
+    "src/theme/",
+    "src/Root.tsx",
+    "src/index.ts",
+    "remotion.config.ts",
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "eslint.config.mjs",
+    "scripts/",
+    "docs/",
+    "config/",
+    "public/fonts/",
+    "public/reels/_shared/",
+    "public/reels/vo_reels_1_el/",
+    "public/reels/reel01-pack/",
+    "out/baseline/",
+    ".claude/",
+    ".github/",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "src/reels/specs/_golden/"
+  ],
+  "except": ["src/reels/specs/", "src/reels/reel02/", "src/reels/reel03/"],
+  "alwaysForbiddenWrites": ["APPROVED", ".infra-lock"],
+  "forbiddenCommands": [
+    { "pattern": "reel:approve|reel-approve\\.ts", "why": "Hanya manusia yang meng-approve, di terminalnya sendiri." },
+    { "pattern": "(reel:cues|reel-cues\\.ts).*--confirm", "why": "Hanya manusia yang mengonfirmasi cue." },
+    { "pattern": "guard:unlock|guard-unlock\\.ts", "why": "Hanya manusia yang membuka kunci." },
+    { "pattern": "\\bremotion\\s+(render|still|lambda|cloudrun)\\b", "why": "Render resmi hanya lewat npm run reel:render." },
+    { "pattern": "\\bgit\\s+push\\b", "why": "Workflow ini lokal; tidak ada push." },
+    { "pattern": "--no-verify", "why": "Tidak ada jalan pintas hook." }
+  ],
+  "forbiddenWhenLocked": [
+    { "pattern": "\\bgit\\s+(restore|stash|apply|clean)\\b|\\bgit\\s+checkout\\s+--|\\bgit\\s+reset\\s+--hard", "why": "Bisa menimpa berkas terlindung diam-diam." }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "_status": "Relaxed on the owner's request (2026-11-16): not strict. Everything is allowed except what breaks the render or the review.",
+  "allow": [
+    "Latin letters, including accented ones (Archivo ships a Latin subset)",
+    "digits",
+    "all punctuation, including typographic quotes, dashes and the ellipsis",
+    "math and currency symbols (+ % = Rp-style prices)",
+    "the ordinary space"
+  ],
+  "forbid": [
+    "emoji and pictographic symbols: they break the style (the original Gemini failure)",
+    "invisible and control characters, combining marks, variation selectors, and non-ASCII spaces: a human cannot see them in review",
+    "letters of other scripts: they render in a fallback font, which also stops homoglyph tricks",
+    "the markup characters * _ ~: the renderer reads them as tone markers"
+  ],
+  "markupChars": ["*", "_", "~"]
+}

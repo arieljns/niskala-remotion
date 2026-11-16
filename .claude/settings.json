@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(npx remotion render:*)",
+      "Bash(npx remotion still:*)",
+      "Bash(npm run reel:approve:*)",
+      "Bash(npm run guard:unlock:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node --no-warnings=ExperimentalWarning \"$CLAUDE_PROJECT_DIR/scripts/guard-hook.ts\""
+          }
+        ]
+      }
+    ]
+  }
+}

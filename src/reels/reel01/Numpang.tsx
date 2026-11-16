@@ -6,7 +6,7 @@ import { Camera, cameraAt, World, worldToScreen, type CameraKeyframe, type Camer
 import type { BoxCheck } from "../debug";
 import { COLORS, EASINGS, FOCAL, REEL, SAFE_ZONE, SHADOWS } from "../tokens";
 import { FONTS } from "../../theme/fonts";
-import { S2_LINE } from "./copy";
+import type { Reel01Copy } from "./copy";
 import { buildHeadlines, Headline } from "./Headlines";
 import { HERO_TILE, StoreTileGrid, TILE } from "./StoreTileGrid";
 import type { SceneTiming } from "./timeline";
@@ -31,7 +31,7 @@ const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const FLICKER_AFTER = 2;
 
 /** S2's camera: on the hero tile, then one long pull-back to a tiny tile in a huge grid. */
-export function useNumpang(scene: SceneTiming) {
+export function useNumpang(scene: SceneTiming, copy: Reel01Copy["numpang"]) {
   return useMemo(() => {
     const pullStart = scene.voFrom + Math.round(REVEAL_SECONDS * REEL.fps);
     const pullEnd = pullStart + PULL_FRAMES;
@@ -42,7 +42,7 @@ export function useNumpang(scene: SceneTiming) {
       { frame: pullEnd, ...on(FAR_ZOOM) },
       { frame: scene.durationInFrames, ...on(FAR_ZOOM * HOLD_DRIFT), ease: "linear" },
     ];
-    const [line] = buildHeadlines([{ scene, offset: 0, lines: S2_LINE.lines, at: S2_LINE.at, center: TEXT_CENTER }]);
+    const [line] = buildHeadlines([{ scene, offset: 0, lines: copy.lines, at: copy.at, center: TEXT_CENTER }]);
     const boxChecks: BoxCheck[] = [
       {
         id: "S2 hero tile stays on screen",
@@ -54,7 +54,7 @@ export function useNumpang(scene: SceneTiming) {
       },
     ];
     return { pullStart, pullEnd, keyframes, line, checks: [line.check], boxChecks, settled: line.check.holdStart };
-  }, [scene]);
+  }, [copy, scene]);
 }
 
 /** Night, a store that looks big, then the truth about how big it is. */

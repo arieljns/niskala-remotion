@@ -13,7 +13,7 @@ import { SEARCH_HERO_CARD, SEARCH_SINK, SearchResults } from "../ui/ios/SearchRe
 import { PHONE, PHONE_OUTER } from "../ui/ios/tokens";
 import { layoutSentence, scaleBox, unionBox } from "../wordLayout";
 import { timedCheck, type TimedCheck } from "./timedCheck";
-import { WORD_TIMES } from "./copy";
+import type { Reel01Copy } from "./copy";
 import { CUE_LEAD, cueStart, voiceStarts, type SceneTiming } from "./timeline";
 
 /**
@@ -33,7 +33,6 @@ const S3_PHONE = { width: PHONE_OUTER.width * S3_PHONE_SCALE, height: PHONE_OUTE
 /** The block's centre: far enough below S4 that the phone never shows in S4's frame. */
 const S3_CENTER_Y = 2970;
 const S3_TEXT_GAP = 30;
-const S3_QUESTION = ["~~Gak ikut~~ __promo?__"] as const;
 /** The allowed push onto the hero card, so viewers clock it as theirs. */
 const S3_PUSH_ZOOM = 1.15;
 const S3_PULL_FRAMES = 16;
@@ -66,7 +65,17 @@ const SQUASH_LANDS_AT = 8;
 const FLAT_LINE_DELAY = 2;
 const S5_FIT_FRAMES = MOTION.pullBack;
 
-export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s5: SceneTiming }) {
+export function useReasons({
+  s3,
+  s4,
+  s5,
+  copy,
+}: {
+  s3: SceneTiming;
+  s4: SceneTiming;
+  s5: SceneTiming;
+  copy: Pick<Reel01Copy, "promo" | "biaya" | "omzet">;
+}) {
   return useMemo(() => {
     const s4From = s4.from - s3.from;
     const s5From = s5.from - s3.from;
@@ -74,12 +83,12 @@ export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s
 
     /* ---------- S3 layout ---------- */
     // Laid out once to measure it, then placed: the headline stays over the phone, left-aligned to itself.
-    const measured = layoutSentence({ lines: S3_QUESTION, style: TYPE.sentence, center: { x: S3_AT.x, y: S3_CENTER_Y } });
+    const measured = layoutSentence({ lines: copy.promo.question, style: TYPE.sentence, center: { x: S3_AT.x, y: S3_CENTER_Y } });
     const textLeft = measured.box.x;
     const blockTop = S3_CENTER_Y - (measured.box.height * 2 + S3_TEXT_GAP + S3_PHONE.height) / 2;
-    const textA = layoutSentence({ lines: S3_QUESTION, style: TYPE.sentence, topLeft: { x: textLeft, y: blockTop } });
+    const textA = layoutSentence({ lines: copy.promo.question, style: TYPE.sentence, topLeft: { x: textLeft, y: blockTop } });
     const textB = layoutSentence({
-      lines: ["**Tenggelam.**"],
+      lines: copy.promo.answer,
       style: TYPE.sentence,
       topLeft: { x: textLeft, y: blockTop + textA.box.height },
     });
@@ -96,7 +105,7 @@ export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s
     };
 
     /* ---------- S3 timing and camera ---------- */
-    const aGap = voiceStarts(s3, WORD_TIMES.s3Question);
+    const aGap = voiceStarts(s3, copy.promo.times.question);
     const textAStart = aGap[0];
     const textBStart = cueStart(s3, 1);
     const sinkStart = textBStart;
@@ -109,17 +118,17 @@ export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s
 
     /* ---------- S4 layout ---------- */
     const s4Text = layoutSentence({
-      lines: ["__Biaya iklan__"],
+      lines: copy.biaya.label,
       style: TYPE.sentence,
       topLeft: { x: CHART_FROM.x, y: S4_AT.y - 590 },
     });
     const naik = layoutSentence({
-      lines: ["NAIK"],
+      lines: [copy.biaya.punch],
       style: TYPE.punch,
       topLeft: { x: CHART_FROM.x, y: s4Text.box.y + s4Text.box.height + 20 },
     });
     const terus = layoutSentence({
-      lines: ["~~terus.~~"],
+      lines: copy.biaya.tail,
       style: TYPE.sentence,
       topLeft: { x: CHART_FROM.x, y: naik.box.y + naik.box.height },
     });
@@ -138,14 +147,14 @@ export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s
     const s4Start = s4From + cueStart(s4, 0);
     const naikCue = s4From + s4.cues[1];
     const naikStart = naikCue - NAIK_BEFORE_CUE;
-    const terusStart = s4From + voiceStarts(s4, [WORD_TIMES.s4Terus])[0];
+    const terusStart = s4From + voiceStarts(s4, [copy.biaya.times.tail[0]])[0];
     const terusSettled = terusStart + MOTION.wordIn;
     const lineStart = s4From + s4.cues[0];
     const lineFrames = naikCue - lineStart;
     const lineEnd = naikCue;
     const panUpStart = s4Start - PAN_UP_WORD_LEAD;
 
-    const s4Gap = voiceStarts(s4, WORD_TIMES.s4Biaya).map((frame) => frame + s4From);
+    const s4Gap = voiceStarts(s4, copy.biaya.times.label).map((frame) => frame + s4From);
     const s4Camera = sentenceCamera({
       layout: s4Text,
       startFrame: s4Start,
@@ -157,12 +166,12 @@ export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s
 
     /* ---------- S5 layout ---------- */
     const omzet = layoutSentence({
-      lines: ["__Omzet?__"],
+      lines: copy.omzet.label,
       style: TYPE.sentence,
       topLeft: { x: S5_TEXT_LEFT, y: S5_AT.y - 300 },
     });
     const segitu = layoutSentence({
-      lines: ["Segitu-", "segitu"],
+      lines: copy.omzet.squash,
       style: TYPE.squash,
       topLeft: { x: S5_TEXT_LEFT, y: omzet.box.y + omzet.box.height + 36 },
     });
@@ -174,7 +183,7 @@ export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s
       (TYPE.sentence.fontSize * TYPE.sentence.lineHeight) / 2 -
       TYPE.sentence.fontSize * 0.334;
     const aja = layoutSentence({
-      lines: ["~~aja.~~"],
+      lines: copy.omzet.tail,
       style: TYPE.sentence,
       topLeft: { x: secondLine.x + secondLine.width + 24, y: ajaTop },
     });
@@ -205,7 +214,7 @@ export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s
     // Framed before the squash starts: its widest pose is its first frame.
     const s5FitReady = squashStart;
     const s5FitStart = s5FitReady - S5_FIT_FRAMES;
-    const ajaStart = Math.max(squashStart + SQUASH_FRAMES, s5From + voiceStarts(s5, [WORD_TIMES.s5Aja])[0]);
+    const ajaStart = Math.max(squashStart + SQUASH_FRAMES, s5From + voiceStarts(s5, [copy.omzet.times.tail[0]])[0]);
     const ajaSettled = ajaStart + MOTION.wordIn;
     const end = durationInFrames;
 
@@ -393,7 +402,7 @@ export function useReasons({ s3, s4, s5 }: { s3: SceneTiming; s4: SceneTiming; s
       sentenceChecks,
       boxChecks,
     };
-  }, [s3, s4, s5]);
+  }, [copy, s3, s4, s5]);
 }
 
 /** The search screen. The list drops on "tenggelam", with a scroll's follow-through. */

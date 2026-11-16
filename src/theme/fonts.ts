@@ -1,7 +1,4 @@
 import { loadFont as loadFontFile } from "@remotion/fonts";
-import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
-import { loadFont as loadLexend } from "@remotion/google-fonts/Lexend";
-import { loadFont as loadManrope } from "@remotion/google-fonts/Manrope";
 import { staticFile } from "remotion";
 
 /**
@@ -29,15 +26,18 @@ const archivo = loadFontFile({
   format: "woff2",
 });
 
-const lexend = loadLexend("normal", { weights: ["300", "400", "600"], subsets: ["latin"] });
-const manrope = loadManrope("normal", { weights: ["400", "500", "600", "700", "800"], subsets: ["latin"] });
-const inter = loadInter("normal", { weights: ["400", "500", "600", "700"], subsets: ["latin"] });
+// Self-hosted too, so a render never touches the network (public/fonts/, registered in the asset manifest).
+const selfHosted = (family: string, file: string, weight: string) =>
+  loadFontFile({ family, url: staticFile(`fonts/${file}`), weight, format: "woff2" });
+const lexend = selfHosted("Lexend", "lexend-variable-latin.woff2", "300 600");
+const manrope = selfHosted("Manrope", "manrope-variable-latin.woff2", "400 800");
+const inter = selfHosted("Inter", "inter-variable-latin.woff2", "400 700");
 
 export const FONTS = {
   display: ARCHIVO_FAMILY,
-  body: lexend.fontFamily,
-  client: manrope.fontFamily,
-  clientChat: inter.fontFamily,
+  body: "Lexend",
+  client: "Manrope",
+  clientChat: "Inter",
 } as const;
 
 /** Archivo is always set expanded in the Niskala layer. */
@@ -72,5 +72,5 @@ export function eyebrowFont(fontSizePx: number, weight: 400 | 600 = 600): React.
 
 /** Resolves once every story font has loaded; Root gates rendering on it. */
 export function waitForStoryFonts(): Promise<unknown> {
-  return Promise.all([archivo, lexend.waitUntilDone(), manrope.waitUntilDone(), inter.waitUntilDone()]);
+  return Promise.all([archivo, lexend, manrope, inter]);
 }

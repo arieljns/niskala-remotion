@@ -1,0 +1,296 @@
+{
+  "version": 1,
+  "source": "legacy-reel01",
+  "voDir": "reels/vo_reels_1_el",
+  "scenes": {
+    "s1": {
+      "file": "vo_01_hook.wav",
+      "expectedSeconds": 5.72,
+      "cues": [
+        0,
+        0.88,
+        2.63
+      ]
+    },
+    "s2": {
+      "file": "vo_02_numpang.wav",
+      "expectedSeconds": 5.05,
+      "cues": [
+        0.05
+      ]
+    },
+    "s3": {
+      "file": "vo_03_promo.wav",
+      "expectedSeconds": 1.91,
+      "cues": [
+        0.05,
+        0.99
+      ]
+    },
+    "s4": {
+      "file": "vo_04_biaya.wav",
+      "expectedSeconds": 2.05,
+      "cues": [
+        0.05,
+        0.98
+      ]
+    },
+    "s5": {
+      "file": "vo_05_omzet.wav",
+      "expectedSeconds": 2.12,
+      "cues": [
+        0.05,
+        0.77
+      ]
+    },
+    "s6": {
+      "file": "vo_06_untung.wav",
+      "expectedSeconds": 2.77,
+      "cues": [
+        0.05,
+        1.59
+      ]
+    },
+    "s7": {
+      "file": "vo_07_solusi.wav",
+      "expectedSeconds": 4.74,
+      "cues": [
+        0.05,
+        2.83
+      ]
+    },
+    "s7b": {
+      "file": "vo_07b_bridge.wav",
+      "expectedSeconds": 2.66,
+      "cues": [
+        0.05,
+        1.65
+      ]
+    },
+    "s8a": {
+      "file": "vo_08a_reveal.wav",
+      "expectedSeconds": 4.59,
+      "cues": [
+        0.05,
+        2.25,
+        3.3
+      ]
+    },
+    "s8b": {
+      "file": "vo_08b_tap.wav",
+      "expectedSeconds": 2.96,
+      "cues": [
+        0.05,
+        0.94
+      ]
+    },
+    "s8c": {
+      "file": "vo_08c_syarat.wav",
+      "expectedSeconds": 2.39,
+      "cues": [
+        0.05,
+        1.14
+      ]
+    },
+    "s8d": {
+      "file": "vo_08d_checkout.wav",
+      "expectedSeconds": 3.37,
+      "cues": [
+        0.05,
+        1.78
+      ]
+    },
+    "s9": {
+      "file": "vo_09_resolusi.wav",
+      "expectedSeconds": 6.01,
+      "cues": [
+        0.05,
+        1.65,
+        4.14
+      ]
+    },
+    "s10": {
+      "file": "vo_10_cta.wav",
+      "expectedSeconds": 8.5,
+      "cues": [
+        0.05,
+        2.17,
+        5.24
+      ]
+    }
+  },
+  "words": {
+    "hook.question": [
+      0.88,
+      1.16,
+      1.46,
+      1.62
+    ],
+    "hook.hook": [
+      2.63,
+      3.08,
+      3.42,
+      3.72,
+      3.96,
+      4.42,
+      4.64
+    ],
+    "numpang.line": [
+      2.1,
+      2.6,
+      2.95,
+      3.3,
+      3.7,
+      3.9,
+      4.15
+    ],
+    "reasons.promo.question": [
+      0.05,
+      0.22,
+      0.46
+    ],
+    "reasons.biaya.label": [
+      0.05,
+      0.42
+    ],
+    "reasons.biaya.tail": [
+      1.5
+    ],
+    "reasons.omzet.tail": [
+      1.6
+    ],
+    "blackBeat.phrase": [
+      0.05,
+      0.48,
+      0.6,
+      0.96,
+      1.59,
+      2.06,
+      2.24
+    ],
+    "solution.first": [
+      0.05,
+      0.46,
+      0.8,
+      1.14,
+      1.4,
+      1.74,
+      2.12
+    ],
+    "solution.second": [
+      2.83,
+      3.2,
+      3.46,
+      3.84,
+      4.24
+    ],
+    "phone.bridge.0": [
+      0.05,
+      0.38,
+      0.56,
+      0.78,
+      1.04
+    ],
+    "phone.bridge.1": [
+      1.65,
+      2.2
+    ],
+    "phone.reveal.0": [
+      0.05,
+      0.7,
+      1.12,
+      1.44,
+      1.74
+    ],
+    "phone.reveal.1": [
+      2.25,
+      2.64,
+      2.92,
+      3.18
+    ],
+    "phone.reveal.2": [
+      3.64,
+      4.04
+    ],
+    "phone.tap.0": [
+      0.05,
+      0.5
+    ],
+    "phone.tap.1": [
+      0.94,
+      1.38,
+      1.78,
+      2.06,
+      2.2,
+      2.48
+    ],
+    "phone.syarat.0": [
+      0.05,
+      0.36
+    ],
+    "phone.syarat.1": [
+      1.14,
+      1.46,
+      1.78
+    ],
+    "phone.checkout.0": [
+      0.05,
+      0.56,
+      0.7,
+      0.94,
+      1.12
+    ],
+    "phone.checkout.1": [
+      1.78,
+      2.22,
+      2.58
+    ],
+    "phone.resolusi.0": [
+      0.05,
+      0.64,
+      0.94
+    ],
+    "phone.resolusi.1": [
+      1.65,
+      2.14,
+      2.72,
+      3,
+      3.22,
+      3.64
+    ],
+    "phone.resolusi.2": [
+      4.14,
+      4.42,
+      4.88,
+      5.18,
+      5.34,
+      5.58
+    ],
+    "cta.phrases.0": [
+      0.05,
+      0.26,
+      0.5,
+      0.98,
+      1.54
+    ],
+    "cta.phrases.1": [
+      2.17,
+      2.5,
+      2.74,
+      2.94
+    ],
+    "cta.phrases.2": [
+      3.58
+    ],
+    "cta.phrases.3": [
+      5.24,
+      5.52,
+      5.96,
+      6.24
+    ],
+    "cta.phrases.4": [
+      6.68,
+      6.98
+    ]
+  }
+}

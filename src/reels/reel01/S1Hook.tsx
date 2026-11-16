@@ -10,15 +10,13 @@ import { COLORS, FOCAL, MOTION, TYPE } from "../tokens";
 import { WordBuild } from "../WordBuild";
 import { layoutSentence, scaleBox } from "../wordLayout";
 import { timedCheck, type TimedCheck } from "./timedCheck";
-import { WORD_TIMES } from "./copy";
+import type { Reel01Copy } from "./copy";
 import { CAMERA_SETTLE, fitToHold, PHRASE_HANDOVER, voiceStarts, type HookVariant, type SceneTiming } from "./timeline";
 
-const HOOK_LINES = ["~~Jangan biarin~~", "__toko kamu__", "**mati** ~~di~~ __2027.__"] as const;
-const QUESTION_LINES = ["~~Kamu jualan~~", "~~di~~ __marketplace?__"] as const;
 
 /** Mid-entrance on frame 0, so the reel never opens on a still or empty frame. */
 const OPENING_START = -4;
-const STOP_FONT_SIZE = 300;
+export const STOP_FONT_SIZE = 300;
 /** Already falling on frame 0, so the reel opens mid-slam. */
 const SLAM_START = -2;
 /** Where the word hits: on the voice's "STOP". */
@@ -41,7 +39,7 @@ const STOP_SIZE = 0.815;
 const STOP_MARGIN = 60;
 const HANDOVER = 14;
 /** Just inside the 876 px safe width. */
-const HOOK_WIDTH = 860;
+export const HOOK_WIDTH = 860;
 /**
  * At this size a full line nearly fills the safe zone, so at the usual 1.3 zoom
  * one line's end and the next line's start can't both stay inside and the
@@ -50,16 +48,16 @@ const HOOK_WIDTH = 860;
 const HOOK_FOLLOW = 0.3;
 const HOOK_FOLLOW_ZOOM = 1.08;
 
-const hookLayout = () => {
+export const hookLayout = (lines: readonly string[]) => {
   // Sized from its own longest line, so it fills the safe width at full zoom.
-  const base = layoutSentence({ lines: HOOK_LINES, style: TYPE.hook, center: FOCAL });
+  const base = layoutSentence({ lines, style: TYPE.hook, center: FOCAL });
   const fontSize = Math.floor((TYPE.hook.fontSize * HOOK_WIDTH) / base.box.width);
-  return layoutSentence({ lines: HOOK_LINES, style: { ...TYPE.hook, fontSize }, center: FOCAL });
+  return layoutSentence({ lines, style: { ...TYPE.hook, fontSize }, center: FOCAL });
 };
 
-export function useS1Hook(variant: HookVariant, scene: SceneTiming) {
+export function useS1Hook(variant: HookVariant, scene: SceneTiming, copy: Reel01Copy["hook"]) {
   return useMemo(() => {
-    const hook = hookLayout();
+    const hook = hookLayout(copy.hook);
 
     if (variant === "plain") {
       const gap = MOTION.wordGap;
@@ -93,17 +91,17 @@ export function useS1Hook(variant: HookVariant, scene: SceneTiming) {
 
     /* ---------- layout ---------- */
     const stop = layoutSentence({
-      lines: ["STOP."],
+      lines: [copy.stop],
       style: { ...TYPE.punch, fontSize: STOP_FONT_SIZE },
       center: FOCAL,
     });
-    const question = layoutSentence({ lines: QUESTION_LINES, style: TYPE.sentence, center: FOCAL });
+    const question = layoutSentence({ lines: copy.question, style: TYPE.sentence, center: FOCAL });
 
     /* ---------- timing ---------- */
-    const hookGap = fitToHold(voiceStarts(scene, WORD_TIMES.s1Hook), scene.durationInFrames, CAMERA_SETTLE);
+    const hookGap = fitToHold(voiceStarts(scene, copy.times.hook), scene.durationInFrames, CAMERA_SETTLE);
     const hookStart = hookGap[0];
     const questionOut = hookStart - PHRASE_HANDOVER;
-    const questionGap = fitToHold(voiceStarts(scene, WORD_TIMES.s1Question), questionOut, CAMERA_SETTLE);
+    const questionGap = fitToHold(voiceStarts(scene, copy.times.question), questionOut, CAMERA_SETTLE);
     const questionStart = questionGap[0];
     // A hard cut on the voice's next word, not a fade: STOP holds at full strength until the Mist replaces it.
     const stopOut = scene.cues[1];
@@ -186,7 +184,7 @@ export function useS1Hook(variant: HookVariant, scene: SceneTiming) {
     ];
 
     return { stop, stopImpact: STOP_IMPACT, question, stopOut, questionStart, questionOut, questionGap, hook, hookStart, hookGap, keyframes, sentenceChecks, boxChecks };
-  }, [scene, variant]);
+  }, [copy, scene, variant]);
 }
 
 /** The impact, in screen space: a shockwave under the word, a flash over everything. */
