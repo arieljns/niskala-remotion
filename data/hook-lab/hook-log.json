@@ -1,0 +1,86 @@
+{
+  "_catatan": "Hook Log: satu entri per reel yang tayang. Diisi setelah posting (debrief), dibaca grill tahap 2 supaya formula yang sudah gagal tidak diulang tanpa alasan. Nilai null = belum diketahui, bukan nol. Jangan menebak angka: isi dari insight Instagram. formula_id merujuk ke formulas.id.json; formula_dugaan = perkiraan agent yang HARUS dikonfirmasi pembuat reel.",
+  "ambang_target": { "skip_rate_3s_maks": 0.5, "sumber": "target Ariel: skip rate di bawah 50%" },
+  "entri": [
+    {
+      "reel": "reel01",
+      "hook": null,
+      "formula_id": null,
+      "formula_dugaan": null,
+      "tayang": true,
+      "views": 2020,
+      "retensi_3s": 0.44,
+      "skip_rate": 0.604,
+      "share": 0.022,
+      "follow": 0.011,
+      "save": 19,
+      "sumber": "patokan di data/reels/20261113-pov-rame-tapi-tipis/brief.md",
+      "catatan": "Teks hook tidak tercatat di repo selain 'pembuka berupa pertanyaan'. Isi manual."
+    },
+    {
+      "reel": "reel02 (pov-rame-tapi-tipis)",
+      "hook": "POV: toko kamu rame tiap hari… (musik drop) …tapi uangnya nggak ada.",
+      "formula_id": null,
+      "formula_dugaan": "21 Mid-Sentence Start atau 22 Contrarian Flip. Konfirmasi Ariel.",
+      "tayang": true,
+      "views": null,
+      "retensi_3s": null,
+      "skip_rate": 0.61,
+      "share": null,
+      "follow": null,
+      "save": null,
+      "sumber": "catatan Ariel 2026-11-14 (skip rate sekitar 61%)",
+      "catatan": "Hook dinilai Ariel sebagai penyebab utama. Isi retensi 3 dtk, share, follow, save dari insight."
+    },
+    {
+      "reel": "reel03 (morajaya-showcase)",
+      "hook": "This. / Is how. / Niskala. / Works. (visual murni, flash per kata)",
+      "formula_id": null,
+      "formula_dugaan": "Tidak ada formula di katalog: hook visual/brand reveal tanpa klaim. Dekat ke 24 The Reveal.",
+      "tayang": null,
+      "views": null,
+      "retensi_3s": null,
+      "skip_rate": null,
+      "share": null,
+      "follow": null,
+      "save": null,
+      "sumber": null,
+      "catatan": "Target skip sekitar 50% (brief). Isi setelah tayang."
+    },
+    {
+      "reel": "skincare-data-cac",
+      "hook": "Omzet skincare 9 miliar, tapi tiap repeat order kamu masih bayar iklan.",
+      "formula_id": null,
+      "formula_dugaan": "14 The Callout (+ Contrarian Flip). Konfirmasi pembuat.",
+      "tayang": false,
+      "views": null,
+      "retensi_3s": null,
+      "skip_rate": null,
+      "share": null,
+      "follow": null,
+      "save": null,
+      "sumber": null,
+      "catatan": "Dihapus dari repo 2026-11-17 sebelum render (pemilik); tema sama dipakai reel baru. Masih ada di git commit 3bc2121. Brief lama: target skip < 50%, save >= 10%."
+    },
+    {
+      "reel": "roas-data-pembeli (20261117-roas-data-pembeli)",
+      "hook": "ROAS. / Kamu optimasi tiap hari. / Kenapa kamu ngejar ROAS terus? Apa yang salah?",
+      "formula_id": 14,
+      "formula_dugaan": null,
+      "tayang": false,
+      "views": null,
+      "retensi_3s": null,
+      "skip_rate": null,
+      "share": null,
+      "follow": null,
+      "save": null,
+      "sumber": "brief disegel 2026-11-17 (ariel + claude-sonnet-5-5, 66/100)",
+      "catatan": "Hipotesis: callout yang bertanya langsung ke seller menahan 3 detik pertama; target skip < 50%, retensi 3 dtk > 44%. Audio final: public/reels/roas-data-pembeli/vo-source/full-take.mp3 (32,13 dtk, ElevenLabs suara baru).",
+      "penyimpangan_dari_brief": [
+        "VO hook memakai tag [suspect] dan [annoyed] dan pengulangan 'Roas lagi roas lagi, roas'; brief menulis tanpa nada marah. Pembuat sudah mendengar dan menilai bagus.",
+        "Deeskalasi di audio: 'Bukan salah kamu. Kamu harus segera cari cara biar ga ketergantungan sama iklan di platform marketplace.' Brief: 'Bukan salahmu. Iklan juga nggak salah.' Jawaban atas keberatan 'apa salahnya iklan' tidak ada di audio.",
+        "Keputusan pembuat 2026-11-17: brief tidak diperbarui supaya segel tetap berlaku; penyimpangan dicatat di sini dan di memori."
+      ]
+    }
+  ]
+}

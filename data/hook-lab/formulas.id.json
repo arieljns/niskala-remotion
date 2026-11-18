@@ -1,0 +1,45 @@
+{
+  "_catatan": "Katalog formula hook untuk grill tahap 2. Diadaptasi dari 26 formula di skill ig-reel (Jakeschincariol/instagram-agent-skill, MIT) ke bahasa Indonesia seller. Kolom muat_spec adalah PENILAIAN AWAL terhadap slot hook di src/reels/contract/spec.schema.ts (contractVersion 1.0.0); belum diuji lewat reel:check. Bentuk memakai {placeholder}, bukan contoh klaim: angka apa pun yang akhirnya tampil di layar wajib ada di tabel 5a brief, dan tidak boleh menjanjikan hasil Niskala (file penawaran belum ada).",
+  "slot_hook_spec": {
+    "sumber": "src/reels/contract/spec.schema.ts",
+    "hookVariant": ["stop", "plain"],
+    "hook.stop": "satu kata punch, maksimal 12 karakter, huruf dan . ! ? - saja",
+    "hook.question": "satu frasa",
+    "hook.hook": "satu frasa",
+    "batas_frasa": "maksimal 3 baris, 3 segmen per baris, 8 kata, 1 aksen",
+    "visual": "dikunci ke Reel01; formula yang butuh visual sendiri tidak bisa dipakai"
+  },
+  "muat_spec_arti": {
+    "ya": "bentuknya langsung muat di slot hook",
+    "sebagian": "muat, tapi butuh syarat (basis klaim, angka di tabel 5a, atau cerita nyata pembuat)",
+    "tidak": "butuh visual/aset/klaim yang dilarang preset atau aturan konten"
+  },
+  "formula": [
+    { "id": 1, "nama": "Cost Confession", "bentuk": "{Nominal} itu yang hilang gara-gara {satu kesalahan}.", "muat_spec": "sebagian", "catatan": "Orang pertama dengan angka nyata. Hanya kalau pembuat benar-benar punya ceritanya.", "jebakan": "Biaya abstrak ('hilang waktu dan tenaga') bukan angka." },
+    { "id": 2, "nama": "Negative Command", "bentuk": "Stop {kebiasaan umum}. Lakukan {alternatif}.", "muat_spec": "ya", "catatan": "Cocok langsung dengan hookVariant 'stop' (kata punch STOP.).", "jebakan": "Menyuruh stop sesuatu yang tidak dilakukan seller." },
+    { "id": 3, "nama": "Nobody Tells You", "bentuk": "Nggak ada yang bilang ke kamu: {kebenaran yang nggak enak}.", "muat_spec": "ya", "catatan": "Posisi Niskala sebagai yang berani bilang. Tulis basis kebenarannya di brief.", "jebakan": "Kebenaran yang sudah semua orang bilang." },
+    { "id": 4, "nama": "The Replacement", "bentuk": "{Ini} gantiin {yang mahal}.", "muat_spec": "sebagian", "catatan": "Perlu angka perbandingan dengan basis. Jangan sebut harga atau hasil Niskala.", "jebakan": "Melebihkan: kalau hanya menggantikan sebagian, sebut sebagian." },
+    { "id": 5, "nama": "Time Collapse", "bentuk": "Dulu {lama}. Sekarang {singkat}.", "muat_spec": "tidak", "catatan": "Menjanjikan hasil Niskala, dilarang sampai file penawaran ada.", "jebakan": "Rasio yang tidak dipercaya orang." },
+    { "id": 6, "nama": "The Receipt", "bentuk": "{N hari} aku {melakukan sesuatu}. Ini angka aslinya.", "muat_spec": "tidak", "catatan": "Butuh rekaman layar dashboard asli; data dummy harus fiktif dan visual dikunci.", "jebakan": "Video angka tanpa layar yang menunjukkannya." },
+    { "id": 7, "nama": "Wrong Way, Right Way", "bentuk": "Kamu {melakukan X} dengan cara salah, dan itu bukan salahmu. {Perbaikan}.", "muat_spec": "ya", "catatan": "Dua frasa. Bagian 'bukan salahmu' menjawab pertanyaan grill: seller merasa dipicu atau diserang?", "jebakan": "Tanpa 'bukan salahmu', terbaca sebagai hinaan." },
+    { "id": 8, "nama": "Insider Leak", "bentuk": "{N tahun} di {dalam bidangnya}. Ini yang nggak pernah diomongin.", "muat_spec": "sebagian", "catatan": "Hanya kalau tahun dan pengalamannya nyata dan bisa dibuktikan; basis dicatat di brief.", "jebakan": "Janji rahasia, isinya brosur." },
+    { "id": 9, "nama": "The Steal", "bentuk": "Curi {artefak} ini. Butuh {waktu} buat bikinnya.", "muat_spec": "tidak", "catatan": "Butuh artefak tampil di layar dan CTA bukan follow; tidak ada di preset.", "jebakan": "Artefak tidak terlihat." },
+    { "id": 10, "nama": "If This, Then Watch", "bentuk": "Kalau kamu {situasi spesifik}, ini {singkat}.", "muat_spec": "ya", "catatan": "Satu situasi sempit (jenis toko + platform). Hindari 'UMKM' atau 'pengusaha'.", "jebakan": "Situasi terlalu luas sehingga tidak menyaring siapa pun." },
+    { "id": 11, "nama": "Numbered With A Favourite", "bentuk": "{N} {hal} yang {hasil}. Nomor {k} yang jarang dipakai.", "muat_spec": "tidak", "catatan": "Struktur daftar bertabrakan dengan urutan scene preset.", "jebakan": "N di atas 7." },
+    { "id": 12, "nama": "The Objection", "bentuk": "\"{Keberatan persis seperti diucapkan}.\" Oke. Begini caranya.", "muat_spec": "ya", "catatan": "Kutip keberatan dari DM/komentar asli. Grill tahap 3 sudah menanyakan keberatan seller.", "jebakan": "Mengarang keberatan." },
+    { "id": 13, "nama": "Before And After, On Screen", "bentuk": "{Tampilkan yang lama}. {Tampilkan yang baru}.", "muat_spec": "tidak", "catatan": "Visual dikunci ke Reel01.", "jebakan": "Tiga tuas perubahan sekaligus." },
+    { "id": 14, "nama": "The Callout", "bentuk": "{Kelompok spesifik}, ini yang selama ini kamu abaikan.", "muat_spec": "ya", "catatan": "Kelompok sempit. Hook skincare-data-cac ('Kamu jualan di marketplace?') adalah bentuk ini.", "jebakan": "Kelompok terlalu besar untuk jadi callout." },
+    { "id": 15, "nama": "The Flop Record", "bentuk": "{N} percobaan pertamaku nggak berhasil. Ini yang berubah di ke-{N+1}.", "muat_spec": "sebagian", "catatan": "Butuh cerita pribadi nyata dengan basis. Jangan dikarang.", "jebakan": "Perubahan terdengar seperti keberuntungan." },
+    { "id": 16, "nama": "The Verbatim Question", "bentuk": "\"{Pertanyaan persis seperti ditanyakan}\" Ini ditanyain tiap minggu.", "muat_spec": "ya", "catatan": "Ambil kata persis dari DM/komentar, jangan dirapikan.", "jebakan": "Merapikan pertanyaan." },
+    { "id": 17, "nama": "Head To Head", "bentuk": "{A} lawan {B}.", "muat_spec": "sebagian", "catatan": "Perbandingan marketplace vs website butuh angka dan basis di tabel 5a.", "jebakan": "Tidak berani memilih pemenang." },
+    { "id": 18, "nama": "Cold Open Demo", "bentuk": "{Mulai di tengah aksi}. Lihat apa yang terjadi.", "muat_spec": "tidak", "catatan": "Gerak dan kamera ditentukan kit.", "jebakan": "Hasil baru muncul setelah 12 detik." },
+    { "id": 19, "nama": "The Deadline", "bentuk": "{Hal} berubah tanggal {tanggal}. Lakukan {aksi} sebelum itu.", "muat_spec": "sebagian", "catatan": "Hanya untuk tenggat nyata (kebijakan platform) dengan sumber di brief.", "jebakan": "Urgensi buatan." },
+    { "id": 20, "nama": "Permission", "bentuk": "Kamu nggak perlu {yang katanya wajib}.", "muat_spec": "ya", "catatan": "Bagian kedua (penggantinya) wajib ada, kalau tidak cuma menghapus hambatan.", "jebakan": "Menghapus hambatan tanpa pengganti." },
+    { "id": 21, "nama": "Mid-Sentence Start", "bentuk": "...dan di situ aku sadar {titik balik}.", "muat_spec": "sebagian", "catatan": "Frasa maksimal 8 kata. Setup harus terisi sebelum detik ke-8. Pembuka POV Reel02 dekat ke bentuk ini.", "jebakan": "Tidak pernah mengisi bagian awalnya." },
+    { "id": 22, "nama": "Contrarian Flip", "bentuk": "{Keyakinan atau kalimat refleks seller, dibalik}.", "muat_spec": "ya", "catatan": "Inti alur Niskala (hook kontrarian). Keyakinan yang dibantah harus refleks seller.", "jebakan": "Membalik kalimat yang tidak pernah diucapkan siapa pun." },
+    { "id": 23, "nama": "The Statistic", "bentuk": "{N}% {kelompok} {fakta mengejutkan}.", "muat_spec": "sebagian", "catatan": "Angka wajib ada di tabel 5a dengan sumber (sumber tidak tampil di layar). Tanpa sumber, jangan pakai.", "jebakan": "Statistik yang tidak bisa ditelusuri." },
+    { "id": 24, "nama": "The Reveal", "bentuk": "Ini {hal} yang baru.", "muat_spec": "tidak", "catatan": "Objek atau visual sebagai hook; dikunci.", "jebakan": "Reveal tanpa taruhan." },
+    { "id": 25, "nama": "Someone Else's Result", "bentuk": "Ada {orang} yang {hasil} dalam {waktu}.", "muat_spec": "tidak", "catatan": "Klaim hasil orang lain, dilarang tanpa bukti. Izin klien Mora Jaya baru lisan.", "jebakan": "Tanpa nama dan tautan, jadi rumor." },
+    { "id": 26, "nama": "The Superlative", "bentuk": "{Paling cepat/besar/satu-satunya} {hal} adalah {jawaban}.", "muat_spec": "sebagian", "catatan": "Klaim 'paling' atau 'satu-satunya' harus bisa dibuktikan; jawabannya harus konkret.", "jebakan": "Superlatif dengan jawaban lembek." }
+  ]
+}

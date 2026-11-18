@@ -33,11 +33,14 @@ export type SceneVo = {
 
 export type ReelTiming = {
   version: 1;
+  /** Which preset's scenes this sidecar holds. Absent = "reel01-pov-v1" (Reel01 and every sidecar written before presets). */
+  preset?: PresetId;
   /** "legacy-reel01" = hand-measured for the first reel; "cues" = produced by reel:cues and confirmed. */
   source: "legacy-reel01" | "cues";
   /** Folder under public/ that holds the scene files. */
   voDir: string;
-  scenes: Record<TimedSceneId, SceneVo>;
+  /** Only the scenes of the preset: all 14 for "reel01-pov-v1", a subset for "reel01-flow-v1". */
+  scenes: Partial<Record<TimedSceneId, SceneVo>>;
   /** Word start times (seconds from the start of the scene file), keyed by phrase path, e.g. "hook.question" or "phone.reveal.1". */
   words: Record<string, number[]>;
   /** source "cues" only: sha256 of the out/<id>/cues.json this was built from, and the human who listened and confirmed. */
@@ -86,5 +89,61 @@ export const SCENE_SPEECH: Record<TimedSceneId, string[]> = {
 };
 
 /** The phrases with word times in a scene, in the order they are spoken. */
-export const scenePhrases = (scene: TimedSceneId): string[] =>
-  SCENE_SPEECH[scene].filter((path) => !path.startsWith("~"));
+export const scenePhrases = (scene: TimedSceneId, preset: PresetId = POV_PRESET): string[] =>
+  sceneSpeech(preset, scene).filter((path) => !path.startsWith("~"));
+
+/**
+ * PRESETS. Reel01's flow (14 scenes) is "reel01-pov-v1". "reel01-flow-v1" is a SUBSET of it in the same
+ * relative order, with the same design: s1 hook, s2 numpang, s3-s4 reasons (promo, biaya; no omzet),
+ * s6 black beat, s10 CTA. No s5, s7, s7b, s8a-d, s9. Scene ids keep their Reel01 names so the kit
+ * (S1Hook, Numpang, Reasons, BlackBeat, Cta) is shared and nothing about Reel01 changes.
+ */
+export const POV_PRESET = "reel01-pov-v1" as const;
+export const FLOW_PRESET = "reel01-flow-v1" as const;
+export const PRESET_IDS = [POV_PRESET, FLOW_PRESET] as const;
+export type PresetId = (typeof PRESET_IDS)[number];
+
+/** The scenes of a preset, in the order they play. */
+export const FLOW_SCENE_IDS = ["s1", "s2", "s3", "s4", "s6", "s10"] as const satisfies readonly TimedSceneId[];
+
+/**
+ * Flow: s6 is three phrases (a long de-escalation split up), one cue each. s10 is three phrases, one cue each:
+ * cue 0 the opening line on Night, cue 1 the hard cut to Mist with the follow card, cue 2 the URL bar (Cta.tsx).
+ */
+const FLOW_CUE_COUNT: Partial<Record<TimedSceneId, number>> = {
+  s1: 3,
+  s2: 1,
+  s3: 2,
+  s4: 2,
+  s6: 3,
+  s10: 3,
+};
+
+const FLOW_SPEECH: Partial<Record<TimedSceneId, string[]>> = {
+  s1: ["~hook.stop", "hook.question", "hook.hook"],
+  s2: ["numpang.line"],
+  s3: ["reasons.promo.question", "~reasons.promo.answer"],
+  s4: ["reasons.biaya.label", "~reasons.biaya.punch", "reasons.biaya.tail"],
+  s6: ["blackBeat.phrases.0", "blackBeat.phrases.1", "blackBeat.phrases.2"],
+  s10: ["cta.phrases.0", "cta.phrases.1", "cta.phrases.2"],
+};
+
+export const presetScenes = (preset: PresetId): readonly TimedSceneId[] =>
+  preset === FLOW_PRESET ? FLOW_SCENE_IDS : SCENE_IDS;
+
+export const sceneCueCount = (preset: PresetId, scene: TimedSceneId): number =>
+  (preset === FLOW_PRESET ? FLOW_CUE_COUNT[scene] : SCENE_CUE_COUNT[scene]) ?? 0;
+
+export const sceneSpeech = (preset: PresetId, scene: TimedSceneId): string[] =>
+  (preset === FLOW_PRESET ? FLOW_SPEECH[scene] : SCENE_SPEECH[scene]) ?? [];
+
+/** The preset a timing sidecar is for. Sidecars from before presets have no field and are Reel01's. */
+export const timingPreset = (timing: { preset?: PresetId }): PresetId => timing.preset ?? POV_PRESET;
+
+/** The preset of a spec that has not been validated yet (scripts hold it as `unknown`). Anything but the flow preset is Reel01's. */
+export const presetOfSpec = (spec: unknown): PresetId =>
+  (spec as { preset?: unknown } | null)?.preset === FLOW_PRESET ? FLOW_PRESET : POV_PRESET;
+
+/** Remotion composition that renders a preset. Reel01 stays "Reel01". */
+export const compositionIdFor = (preset: PresetId): "Reel01" | "ReelFlow" =>
+  preset === FLOW_PRESET ? "ReelFlow" : "Reel01";

@@ -68,15 +68,21 @@ const PADS: Partial<Record<SceneId, { padIn?: number; padOut?: number }>> = {
   s10: { padOut: END_CARD_HOLD },
 };
 
+/** Only the scenes the timing has, in Reel01's order: all 14 for Reel01, a subset for the flow preset. */
 export const buildSpecs = (timing: ReelTiming): readonly VoSpec[] =>
-  SCENE_IDS.map((id) => {
+  SCENE_IDS.flatMap((id) => {
     const vo = timing.scenes[id];
-    return spec(id, vo.file, vo.expectedSeconds, vo.cues, PADS[id]);
+    return vo ? [spec(id, vo.file, vo.expectedSeconds, vo.cues, PADS[id])] : [];
   });
 
 /** TODO_VO_HOOK_PLAIN: not recorded yet. The plain hook is the last hook line, shown from frame 0. */
-const plainHookSpec = (timing: ReelTiming): VoSpec =>
-  spec("s1", "vo_01_hook_plain.wav", timing.scenes.s1.expectedSeconds - timing.scenes.s1.cues[2], [0]);
+const plainHookSpec = (timing: ReelTiming): VoSpec => {
+  const s1 = timing.scenes.s1;
+  if (!s1) {
+    throw new Error("Timing has no scene s1");
+  }
+  return spec("s1", "vo_01_hook_plain.wav", s1.expectedSeconds - s1.cues[2], [0]);
+};
 
 export const specsFor = (variant: HookVariant, timing: ReelTiming): readonly VoSpec[] =>
   variant === "plain" ? buildSpecs(timing).map((item) => (item.id === "s1" ? plainHookSpec(timing) : item)) : buildSpecs(timing);
@@ -97,6 +103,7 @@ export type SceneTiming = {
 };
 
 export type ReelTimeline = {
+  /** Every scene of Reel01. A preset with fewer scenes (reel01-flow-v1) only has the ones in `order`; read only those. */
   scenes: Record<SceneId, SceneTiming>;
   /** Scene order, for walking them without relying on object key order. */
   order: SceneId[];

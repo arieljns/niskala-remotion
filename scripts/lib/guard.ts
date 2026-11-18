@@ -10,7 +10,7 @@
 import { createHash } from "node:crypto";
 import { chmodSync, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { REPO_ROOT } from "./brief.ts";
+const REPO_ROOT = resolve(import.meta.dirname, "..", "..");
 
 type Rule = { pattern: string; why: string };
 export type GuardConfig = {

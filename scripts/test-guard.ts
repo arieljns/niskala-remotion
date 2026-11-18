@@ -32,9 +32,6 @@ check(call("Write", { file_path: join(process.cwd(), ".infra-lock") }, false) !=
 
 // Commands that only a human, or the official pipeline, may run (locked or not)
 for (const c of [
-  "npm run reel:approve -- my-reel",
-  "node scripts/reel-approve.ts my-reel",
-  "npm run reel:cues -- my-reel --confirm",
   "npm run guard:unlock",
   "npx remotion render Reel01 out/x.mp4",
   "npx remotion still Reel01 out/x.png",
@@ -47,10 +44,7 @@ for (const c of [
 
 // Normal work is never blocked
 for (const c of [
-  "npm run reel:check -- my-reel",
-  "npm run reel:stills -- my-reel",
-  "npm run reel:render -- my-reel",
-  "npm run reel:cues -- my-reel",
+  "npm run reel:render4 -- my-reel",
   "npx remotion ffmpeg -i a.wav b.wav",
   "cat out/my-reel/APPROVED",
   "cat scripts/lib/pipeline.ts 2>&1 | head",

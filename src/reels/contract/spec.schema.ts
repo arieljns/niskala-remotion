@@ -25,6 +25,12 @@ export const PRESET_REEL01_POV_V1 = {
   maxSecondsExclusive: 60,
 } as const;
 
+/**
+ * Second preset: the same limits and the same design, a different flow (see FLOW_SCENE_IDS in timing-types.ts).
+ * Reel01's limits are copied, never loosened.
+ */
+export const PRESET_REEL01_FLOW_V1 = { ...PRESET_REEL01_POV_V1, id: "reel01-flow-v1" } as const;
+
 /** The message hierarchy of Reel01: accent (the point), strong (what it is about), quiet (connecting words). */
 export const TONES = ["plain", "quiet", "strong", "accent"] as const;
 export type Tone = (typeof TONES)[number];
@@ -86,15 +92,17 @@ const triple = <T extends z.ZodType>(item: T) => z.tuple([item, item, item]);
  * beat, S7 solution, S7b-S9 phone flow, S10 CTA. The spec only fills the slots.
  * The order of entries inside a tuple is the order they appear on screen.
  */
+const SpecId = z
+  .string()
+  .regex(
+    /^[a-z0-9][a-z0-9-]{1,40}$/,
+    "ID_INVALID: id must be a slug: lowercase letters, digits and hyphens, 2 to 41 characters",
+  );
+
 export const ReelSpec = z.strictObject({
   contractVersion: z.literal(CONTRACT_VERSION),
   preset: z.literal(PRESET_REEL01_POV_V1.id),
-  id: z
-    .string()
-    .regex(
-      /^[a-z0-9][a-z0-9-]{1,40}$/,
-      "ID_INVALID: id must be a slug: lowercase letters, digits and hyphens, 2 to 41 characters",
-    ),
+  id: SpecId,
   hookVariant: z.enum(["stop", "plain"]),
   hook: z.strictObject({
     stop: PunchWord,
@@ -122,6 +130,36 @@ export const ReelSpec = z.strictObject({
   }),
 });
 export type ReelSpec = z.infer<typeof ReelSpec>;
+
+/**
+ * "reel01-flow-v1": a subset of Reel01's flow in the same relative order, same design.
+ * S1 hook, S2 numpang, S3 promo, S4 biaya, S6 black beat (3 phrases), S10 CTA (3 phrases).
+ * No omzet (S5), solution (S7) or phone flow (S7b-S9). Everything else matches ReelSpec.
+ * contractVersion stays 1.0.0: adding a preset changes nothing for Reel01 or its golden specs.
+ */
+export const FlowSpec = z.strictObject({
+  contractVersion: z.literal(CONTRACT_VERSION),
+  preset: z.literal(PRESET_REEL01_FLOW_V1.id),
+  id: SpecId,
+  hookVariant: z.enum(["stop", "plain"]),
+  hook: z.strictObject({
+    stop: PunchWord,
+    question: Phrase,
+    hook: Phrase,
+  }),
+  numpang: z.strictObject({ line: Phrase }),
+  reasons: z.strictObject({
+    promo: z.strictObject({ question: Phrase, answer: Phrase }),
+    biaya: z.strictObject({ label: Phrase, punch: PunchWord, tail: Phrase }),
+  }),
+  blackBeat: z.strictObject({ phrases: triple(Phrase) }),
+  cta: z.strictObject({ phrases: triple(Phrase) }),
+});
+export type FlowSpec = z.infer<typeof FlowSpec>;
+
+/** Any spec a reel may have. `preset` decides which shape it must be. */
+export const AnySpec = z.discriminatedUnion("preset", [ReelSpec, FlowSpec]);
+export type AnySpec = ReelSpec | FlowSpec;
 
 /** Spec -> the ** / __ / ~~ markup that the kit's layoutSentence reads. Used by the renderer and the equivalence test. */
 const MARK: Record<Tone, string> = {

@@ -2,8 +2,9 @@ import { Audio } from "@remotion/media";
 import { ALL_FORMATS, Input, UrlSource } from "mediabunny";
 import { getStaticFiles, Sequence, staticFile, type CalculateMetadataFunction } from "remotion";
 import { REEL } from "../tokens";
+import type { ReelTiming } from "../contract/timing-types";
 import type { Reel01Props } from "./Reel01";
-import { buildTimeline, musicVolume, specsFor, type ReelTimeline, type SceneId } from "./timeline";
+import { buildTimeline, musicVolume, specsFor, type HookVariant, type ReelTimeline, type SceneId } from "./timeline";
 
 const AUDIO_DIR = "reels/reel01/audio";
 const AUDIO_EXTENSIONS = ["wav", "mp3", "m4a"] as const;
@@ -27,7 +28,7 @@ async function fileSeconds(path: string): Promise<number> {
 }
 
 /** Reads every VO file's real length; the reel's length and all its scene frames follow from that. */
-export const calculateReel01Metadata: CalculateMetadataFunction<Reel01Props> = async ({ props }) => {
+async function measureTimeline(props: { spec: { hookVariant: HookVariant }; timing: ReelTiming }) {
   const specs = specsFor(props.spec.hookVariant, props.timing);
   const entries = await Promise.all(
     specs
@@ -47,6 +48,12 @@ export const calculateReel01Metadata: CalculateMetadataFunction<Reel01Props> = a
     console.warn(`[vo] SILENT: using expected durations for ${missing.length} missing file(s): ${missing.join(", ")}`);
   }
 
+  return timeline;
+}
+
+/** The same measurement for both presets: only the scenes in the timing are measured. */
+export const calculateReel01Metadata: CalculateMetadataFunction<Reel01Props> = async ({ props }) => {
+  const timeline = await measureTimeline(props);
   return { durationInFrames: timeline.totalFrames, fps: REEL.fps, props: { ...props, timeline } };
 };
 

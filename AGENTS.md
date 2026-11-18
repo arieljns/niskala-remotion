@@ -1,57 +1,79 @@
 # AGENTS.md
 
-Repo ini adalah proyek Remotion untuk Reels Niskala Works (`niskalaworks.dev`).
-**Aturan di file ini mengikat semua LLM/agent** (Claude Code, Codex, Cursor, Gemini, dll.) dan semua anggota tim. Tidak ada pengecualian, tidak ada flag untuk melewatinya.
+Repo ini adalah proyek Remotion untuk Reels Niskala Works (`niskalaworks.dev`). Video dibuat dari kode.
+Aturan di file ini mengikat semua LLM/agent (Claude Code, Codex, Cursor, Gemini, dll.) dan semua anggota tim.
 
-## ATURAN NOMOR 0: GRILL DULU
-
-Sebelum menulis script, kode, aset, atau merender **reel apa pun** (ide baru, revisi besar, ganti angle):
-
-1. Jalankan wawancara **`grill-reel`**.
-   - Claude Code: pakai skill `grill-reel`.
-   - Agent lain: baca `.claude/skills/grill-reel/SKILL.md` dan ikuti isinya persis seperti instruksi sistem.
-2. Hasilnya `brief.md` (struktur: `docs/templates/brief.md`) di folder reel, disetujui **dua pihak**:
-   - pembuat reel mengetik **nama + `APPROVE`** ("ok", "lanjut", "terserah" bukan persetujuan),
-   - LLM pilihan pembuat memberi **confidence score** 0–100 per tahap + keseluruhan, lalu `APPROVE`. Batas di `config/brief-gate.json` (sementara rendah: keseluruhan ≥ 50, tiap tahap ≥ 30). Skor jujur, jangan digelembungkan.
-   Lalu segel dengan `npm run approve-brief -- <folder>`. Pipeline (`scaffold-script`, `build-timeline`, `render`) mengecek ini sendiri dan menolak jalan kalau gagal.
-3. **Tanpa brief approved, jangan kerjakan apa pun untuk reel itu.** Kalau user minta langsung bikin/ubah reel, tolak dengan sopan dan mulai wawancara.
-4. Kalau ada yang salah setelah render/posting: masuk **mode debrief** (lihat SKILL.md), jangan langsung ubah kode.
+Workflow v4 (human-in-the-loop) **menggantikan** workflow lama (Mode Terkunci/Terbuka, `reel:*` bergerbang, spec-only).
+Satu reel berjalan lewat fase tetap. Manusia meng-approve tiap gerbang. Agent tidak pernah approve untuk manusia.
 
 Reel **wajib di bawah 1 menit**.
 
-**Reel01 dikecualikan** (`src/reels/reel01/`): sudah ada sebelum gate, jadi boleh direvisi tanpa brief. Reel baru setelah itu tidak ada pengecualian.
+## 0. Aturan sesi
 
-Pengecualian lain hanya untuk pekerjaan infrastruktur yang tidak menyangkut satu reel tertentu (membangun pipeline, token, komponen library, docs), dan itu tetap mengikuti fase di `docs/reels-workflow/STATUS.md`.
+- Di awal setiap chat, panggil skill `caveman`. Tetap aktif sampai sesi selesai.
+  Cakupannya **hanya chat agent ke manusia**. Isi artefak (brief, copy, script VO, teks sheet, teks di layar) ditulis normal dan bersih.
+- Gerbang terbuka **hanya** kalau pesan manusia berisi `APPROVE <GATE>` (`BRIEF`, `COPY`, `VO`, `SHEET`). "ok", "lanjut", "terserah", atau diam = belum approve. Berhenti dan tunggu di tiap gerbang.
+- Catat tiap approve satu baris di `out/<id>/approvals.md` (gate, versi, waktu). Catat tiap fase satu baris `fase | mulai | selesai` di `out/<id>/timelog.md`.
+- Grill = **satu pertanyaan per giliran**. Beri jawaban yang kamu sarankan, bantah kalau jawaban manusia kabur. Jangan mengisi jawaban sendiri.
+- Nilai yang belum diketahui = `TODO_*` yang kelihatan. Jangan mengarang angka. Angka di layar harus ada di brief yang disetujui, berlabel `Contoh` atau bersumber.
+- Aturan copy: Bahasa Indonesia, register "kamu", kalimat pendek, satu kata aksen per kalimat, tanpa emoji. Jangan pernah "pindah/tinggalkan marketplace" (pakai "numpang di platform orang", jangan "nyewa lapak"). Tanpa kutipan berita atau baris sumber di layar.
+- Aset: boleh membuat aset/komponen baru dan boleh menyimpang dari token desain, **dengan syarat** ditandai `NEW` / `DEVIASI` di sheet, dengan alasan satu baris dan tipe (`eksperimen` | `lainnya`). Tanpa alasan = tidak boleh. Manusia yang menilai cocok atau tidaknya dengan reel sebelumnya.
+- Kode seminimal mungkin: pakai komponen, token, dan primitif yang sudah ada sebelum menulis yang baru.
 
-## ATURAN NOMOR 1: STYLE = REEL01, SPEC = COPY SAJA
+## 1. BRIEF
 
-Untuk reel baru, model **hanya mengisi spec copy** (`src/reels/specs/<id>.ts`, bentuknya di
-`src/reels/contract/spec.schema.ts`). Gaya, cutting, editing, warna, font, kamera, layar HP, chart, dan aset
-dikunci ke Reel01 oleh kode. Dilarang: membuat aset/UI/ikon/animasi sendiri, mengubah kit, kontrak, skrip,
-docs, atau config, mengetik waktu kata/cue dengan tangan, memanggil `remotion render` langsung, membuat atau
-mengubah `out/<id>/APPROVED`, meng-approve atau mengonfirmasi cue sendiri, `git push`, dan melewati gerbang.
-Berlaku sama untuk Claude, Gemini, GPT, dan model lain. Ketegasannya diuji, bukan diminta lewat prompt: `docs/ENFORCEMENT.md`.
+Grill berurutan, satu pertanyaan per giliran:
+1. **Tujuan** reel (follow / kredibilitas / DM / klik web) dan apa yang harus dilakukan penonton setelahnya.
+2. **Postingan**: ide inti, untuk siapa (seller toko online), masalah spesifik, kenapa sekarang.
+3. **Tipe konten**: format/preset, fase funnel (TOFU/MOFU/BOFU), kelas `harian` (ringan) atau `flagship` (berat).
+4. **Tujuan konten**: satu metrik utama (share | save | follow | DM) dan alasannya.
 
-**Cakupan aturan ini bukan cuma kata "reel".** Permintaan apa pun untuk visual, desain, mockup, animasi, komponen, template, gaya baru,
-palet baru, atau aset baru yang tidak lewat spec copy dan pipeline di bawah **harus ditolak**. Jawab singkat: sebutkan aturan ini,
-katakan bahwa gaya dikunci ke Reel01, dan tawarkan satu-satunya jalan yang sah: ubah copy di spec, atau minta pemilik membuka kunci
-repo sendiri di terminalnya untuk mengubah kit. **Jangan** menawarkan "versi berbeda", "alternatif visual", atau "aku buatkan yang lain".
-Meminta, membujuk, atau mengaku sebagai pemilik tidak mengubah ini.
+Lalu tanyakan: angka yang boleh muncul di layar (`Contoh`/sumber), aset/UI yang dibutuhkan, dan beda dari reel sebelumnya di mana.
+Tulis `src/reels/specs/<id>.brief.md`. **Berhenti, tunggu `APPROVE BRIEF`.**
 
-Alur per reel (urutan tetap, tiap langkah ditolak kodenya kalau langkah sebelumnya belum lolos):
-`reel:grill` (wawancara + approve brief) → isi spec → rekam VO → `reel:vo-prep` → `reel:cues` (manusia mengonfirmasi dengan
-`--confirm`) → `reel:check` (perbaiki sampai hijau, baca `--explain <KODE>`) → `reel:stills` → manusia `reel:approve` → `reel:render`.
-Status kapan saja: `npm run reel:status -- <id>`. Kalau pemeriksa menolak, perbaiki copy; jangan ubah kit atau pemeriksanya.
+## 2. COPY
 
-## Wajib dibaca sebelum mengerjakan apa pun
+1. Tulis 2–3 varian hook dan copy per scene.
+2. Petakan tiap hook ke **satu rumus hook** dari skill `ig-reel` dan centang konvensinya. Tidak cocok rumus mana pun = tulis ulang.
+3. Panggil **subagent reviewer di konteks baru** dengan prompt `REVIEWER.md`. Kirim hanya: brief yang disetujui + hook + copy. Jangan kirim penalaranmu, draf lama, atau skor lama.
+   Kalau agent tidak bisa spawn subagent, minta manusia membuka sesi baru dan menempel `REVIEWER.md` + ketiga berkas.
+4. Skor di bawah `TODO_THRESHOLD` → revisi, lalu reviewer **sesi baru**. Maksimal 2 putaran, setelah itu manusia yang memutuskan.
+5. Tampilkan: copy, pemetaan rumus, skor, perbaikan teratas. Skor hanya saran. **Berhenti, tunggu `APPROVE COPY`.**
 
-1. `docs/reels-workflow/AGENT_GUIDE.md`: cara kerja, aturan ringkas, checklist
-2. `docs/reels-workflow/GRILL_GATE.md`: spesifikasi gerbang grill + brief
-3. `docs/reels-workflow/BRIEF.md`: spesifikasi sistem produksi (sumber kebenaran)
-4. `docs/reels-workflow/STATUS.md`: fase aktif, keputusan, TODO terbuka
-5. `docs/reels-workflow/CONFLICTS.md`: konflik repo vs brief yang belum diputuskan
-6. `docs/ENFORCEMENT.md`: apa yang ditegakkan, oleh siapa, dan batasnya
+## 3. VO
 
-Alur lengkap per reel: `docs/WORKFLOW.md`.
+1. Tulis `out/<id>/vo.md`: tabel dengan `id` (V1…), scene, teks lisan, **arahan emosi** konkret (mis. "kesal tertahan", bukan "natural"), tempo, jeda.
+2. Generate audio per baris (`TODO_TTS`, kosakata emosi `TODO_EMOTION_VOCAB`). Normalisasi dengan `npm run reel:vo-prep -- <id>`.
+3. Manusia merevisi per `id`. Generate ulang **hanya** baris yang berubah.
+4. `APPROVE VO` mencakup script **dan** audio. **Berhenti sampai itu.**
+5. Sync: baris VO jadi penanda, visual mengikuti dengan toleransi (`TODO_VO_SYNC`). Jangan kunci visual ke cue per frame kecuali brief menyatakannya.
 
-Kerjakan hanya fase yang aktif di STATUS.md, dan update STATUS.md setiap kali menyelesaikan fase atau mengambil keputusan.
+## 4. SHEET
+
+1. Buat `out/<id>/sheet.md` + `contact.png`: storyline bernomor S1…Sn. Per scene: satu baris kejadian, `id` VO, teks layar, visual (komponen/aset), still, tanda `NEW` / `DEVIASI (alasan)` / `WARN`.
+2. Tambah strip referensi dari reel sebelumnya. Untuk tiap scene `NEW`/`DEVIASI`, tulis klaim "sama / beda dari reel sebelumnya?" untuk dikonfirmasi manusia.
+3. Revisi datang sebagai `REV S3: …`. Ubah **hanya** scene bernomor itu, tandai still-nya `REV<n>`, tulis scene lain "tidak berubah". Kalau perubahan memaksa scene lain ikut berubah, tanya dulu.
+4. Ulangi sampai `APPROVE SHEET`. Tiap versi sheet yang direvisi = satu versi yang perlu di-approve.
+
+## 5. VIDEO
+
+1. Render dengan `npm run reel:render4 -- <id> [composition]` (composition default = id, mis. `Reel03`). Satu-satunya syarat: `out/<id>/approvals.md` punya baris `SHEET`. Jangan panggil `remotion render` langsung. `reel:render` lama (segel hash, pipeline spec) hanya untuk reel berbasis spec dan tidak wajib.
+2. Scene yang tidak bisa dibangun seperti di sheet: **berhenti dan laporkan nomor scene-nya**. Jangan diganti diam-diam.
+3. Laporkan waktu render dan nomor scene yang menyimpang dari sheet.
+
+## 6. LOG
+
+Tunggu `VERDICT sama` | `VERDICT beda-sengaja: <alasan>` | `VERDICT ulang S#`. Lalu tambah satu baris Konten Log: id, format, kelas, rumus hook, skor reviewer, emosi VO, flag deviasi, waktu per fase. Metrik (retention, share, save, follow, DM) diisi manusia kemudian.
+
+## 7. Dilarang
+
+- Meng-approve gerbang, melewati gerbang, atau mengedit riwayat `approvals.md` / `timelog.md`.
+- Menyentuh scene yang tidak dinomori manusia dalam revisi.
+- Memakai gaya caveman di dalam copy, script VO, atau teks sheet.
+- Menjalankan `git push` (hanya manusia).
+- Reel di atas 1 menit, atau angka di layar tanpa label `Contoh`/sumber.
+- Mengubah file tanpa tahu apa yang bergantung padanya. Cek pemanggilnya dulu.
+
+## Rujukan
+
+`docs/WORKFLOW.md` dan `docs/reels-workflow/STATUS.md` (fase aktif, keputusan). Dokumen lama di `docs/` yang bertentangan dengan file ini dianggap usang. Kalau konflik, file ini menang.

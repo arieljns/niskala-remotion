@@ -9,7 +9,8 @@
  */
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { REPO_ROOT } from "./lib/brief.ts";
+import { resolve } from "node:path";
+const REPO_ROOT = resolve(import.meta.dirname, "..");
 import { LOCK_PATH, protectedHashes } from "./lib/guard.ts";
 
 let bad = false;

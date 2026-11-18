@@ -39,7 +39,7 @@ export const REEL01_DEFAULT_PROPS: Reel01Props = {
 };
 
 /** v1's flicker placement: frames after the last word settles. */
-const S6_FLICKER_AFTER = 5;
+export const S6_FLICKER_AFTER = 5;
 
 /** Text is measured during render, so nothing below may mount before the fonts load. */
 export const Reel01: React.FC<Reel01Props> = (props) => {

@@ -1,4 +1,4 @@
-import { phraseToMarkup, type Phrase, type ReelSpec } from "../contract/spec.schema";
+import { phraseToMarkup, type FlowSpec, type Phrase, type ReelSpec } from "../contract/spec.schema";
 import type { ReelTiming } from "../contract/timing-types";
 
 /**
@@ -68,5 +68,38 @@ export function buildCopy(spec: ReelSpec, timing: ReelTiming) {
       s9: timed(timing, "phone.resolusi", phone.resolusi),
       s10: timed(timing, "cta.phrases", spec.cta.phrases),
     },
+  };
+}
+
+export type FlowCopy = ReturnType<typeof buildFlowCopy>;
+
+/**
+ * Spec + timing for the flow preset (reel01-flow-v1): the same pieces Reel01 shows, in the same shapes, so the
+ * same scene hooks read them. No omzet, solution or phone flow. Black beat and CTA are three phrases each.
+ */
+export function buildFlowCopy(spec: FlowSpec, timing: ReelTiming) {
+  const markup = phraseToMarkup;
+  const times = (path: string) => wordTimes(timing, path);
+  return {
+    hook: {
+      stop: spec.hook.stop,
+      question: markup(spec.hook.question),
+      hook: markup(spec.hook.hook),
+      times: { question: times("hook.question"), hook: times("hook.hook") },
+    },
+    numpang: { lines: markup(spec.numpang.line), at: times("numpang.line") },
+    promo: {
+      question: markup(spec.reasons.promo.question),
+      answer: markup(spec.reasons.promo.answer),
+      times: { question: times("reasons.promo.question") },
+    },
+    biaya: {
+      label: markup(spec.reasons.biaya.label),
+      punch: spec.reasons.biaya.punch,
+      tail: markup(spec.reasons.biaya.tail),
+      times: { label: times("reasons.biaya.label"), tail: times("reasons.biaya.tail") },
+    },
+    blackBeats: { s6: timed(timing, "blackBeat.phrases", spec.blackBeat.phrases) },
+    lines: { s10: timed(timing, "cta.phrases", spec.cta.phrases) },
   };
 }
