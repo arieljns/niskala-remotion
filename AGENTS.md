@@ -33,20 +33,23 @@ Tulis `src/reels/specs/<id>.brief.md`. **Berhenti, tunggu `APPROVE BRIEF`.**
 
 ## 2. COPY
 
+Hook dan copy adalah titik tekan workflow ini. Skor hook **dan** skor copy masing-masing harus **≥ 70** (`THRESHOLD = 70`, tidak dirata-rata).
+
 1. Tulis 2–3 varian hook dan copy per scene.
 2. Petakan tiap hook ke **satu rumus hook** dari skill `ig-reel` dan centang konvensinya. Tidak cocok rumus mana pun = tulis ulang.
-3. Panggil **subagent reviewer di konteks baru** dengan prompt `REVIEWER.md`. Kirim hanya: brief yang disetujui + hook + copy. Jangan kirim penalaranmu, draf lama, atau skor lama.
+3. Panggil **reviewer di konteks baru** (subagent, atau Gemini/model lain di sesi terpisah) dengan prompt `REVIEWER.md`. Kirim hanya: brief yang disetujui + hook + copy. Jangan kirim penalaranmu, draf lama, atau skor lama.
    Kalau agent tidak bisa spawn subagent, minta manusia membuka sesi baru dan menempel `REVIEWER.md` + ketiga berkas.
-4. Skor di bawah `TODO_THRESHOLD` → revisi, lalu reviewer **sesi baru**. Maksimal 2 putaran, setelah itu manusia yang memutuskan.
-5. Tampilkan: copy, pemetaan rumus, skor, perbaikan teratas. Skor hanya saran. **Berhenti, tunggu `APPROVE COPY`.**
+4. Reviewer wajib **accountable**: riset referensi dengan sumber ber-URL, rubrik berbobot, alasan per sub-skor yang mengutip baris copy, dan syarat naik ke 70+. Laporan yang tidak memenuhi format `REVIEWER.md` ditolak dan reviewer diulang di sesi baru.
+5. **Skor hook atau copy < 70 = dilarang meminta `APPROVE COPY` dan dilarang lanjut ke VO.** Revisi berdasarkan alasan reviewer, lalu reviewer **sesi baru**. Ulangi sampai keduanya ≥ 70. Setelah 3 putaran gagal, lapor ke manusia dan sarankan ganti angle; jangan menurunkan ambang dan jangan menggelembungkan skor.
+6. Tampilkan ke manusia: copy, pemetaan rumus, laporan reviewer lengkap (skor, alasan, sumber). **Berhenti, tunggu `APPROVE COPY`.**
 
 ## 3. VO
 
 1. Tulis `out/<id>/vo.md`: tabel dengan `id` (V1…), scene, teks lisan, **arahan emosi** konkret (mis. "kesal tertahan", bukan "natural"), tempo, jeda.
-2. Generate audio per baris (`TODO_TTS`, kosakata emosi `TODO_EMOTION_VOCAB`). Normalisasi dengan `npm run reel:vo-prep -- <id>`.
+2. Generate audio per baris dengan **ElevenLabs**, memakai arahan emosi dari `vo.md` yang diterjemahkan ke fitur ElevenLabs (tag audio seperti `[whispers]`, `[sighs]`, `[excited]` pada model v3, atau pengaturan stability/style pada model lain; cek yang didukung model yang dipakai). Normalisasi loudness ke -16 LUFS dengan ffmpeg `loudnorm`.
 3. Manusia merevisi per `id`. Generate ulang **hanya** baris yang berubah.
 4. `APPROVE VO` mencakup script **dan** audio. **Berhenti sampai itu.**
-5. Sync: baris VO jadi penanda, visual mengikuti dengan toleransi (`TODO_VO_SYNC`). Jangan kunci visual ke cue per frame kecuali brief menyatakannya.
+5. Sync longgar (final): baris VO adalah penanda per scene, visual mengikuti dengan toleransi sekitar 0,3 detik. Jangan kunci visual ke cue per frame kecuali brief menyatakannya.
 
 ## 4. SHEET
 
